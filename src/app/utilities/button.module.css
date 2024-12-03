@@ -1,4 +1,4 @@
-.btn_styling {
+.btn-styling {
     position: absolute;
     display: flex;
     flex-direction: row;
@@ -15,5 +15,10 @@
     padding-bottom: 14px;
     padding-left: 16px;
     padding-right: 16px;
-    @apply bg-violet-700 border-violet-800
+    @apply bg-violet-700 border-violet-800 hover:bg-violet-500 hover:border-violet-600
+}
+
+.input-styling {
+    cursor: pointer;
+    @apply cursor-pointer relative leading-[1.5rem] uppercase text-ellipsis whitespace-nowrap
 }

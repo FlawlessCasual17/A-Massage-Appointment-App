@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import localFont from 'next/font/local'
 import './globals.css'
+import { ReactNode } from 'react'
 
 const interRegular = localFont({
     src: './fonts/InterVariable.woff2',
@@ -13,12 +14,13 @@ export const metadata: Metadata = {
     description: 'Book your massage appointment today!'
 }
 
-type reactNodeType = Readonly<{ children: React.ReactNode }>
-
-export default function RootLayout({ children }: reactNodeType) {
+// type reactNodeType = Readonly<{ children: ReactNode }>
+export default function RootLayout(props: { children: Readonly<ReactNode> }) {
     return (
         <html lang='en'>
-            <body className={`${interRegular.variable} antialiased`}>{children}</body>
+            <body className={`${interRegular.variable} antialiased`}>
+                {props.children}
+            </body>
         </html>
     )
 }

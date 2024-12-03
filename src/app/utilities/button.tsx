@@ -1,9 +1,14 @@
-import sty from './button.module.css'
+'use client'
 
-export default function Button() {
-    return (
-        <div className={`btn ${sty.btn_styling} hover:bg-violet-500 hover:border-violet-600`}>
-            <input type='button' value='book now' className='relative leading-[1.5rem] uppercase text-ellipsis whitespace-nowrap' />
-        </div>
-    )
+import { bookingHandler } from '../actions/bookingHandler'
+import sty from './button.module.css'
+import { MouseEventHandler as msHandler } from 'react'
+
+export default function Button(props: { onClick: msHandler<HTMLInputElement>, value: string }) {
+    async function clickHandler() {
+        const r = await bookingHandler()
+        // TODO: implement a conditional statement here...
+    }
+
+    return <input {...props} type='button' className={`btn ${sty['btn-styling']} ${sty['input-styling']}`} />
 }
