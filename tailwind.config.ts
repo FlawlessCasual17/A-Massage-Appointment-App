@@ -25,9 +25,9 @@ export default {
                 'sizing-min-height-min-h-6': '24px',
                 'sizing-max-height-max-h-16': '64px'
             },
-            fontFamily: {
+            /* fontFamily: {
                 inter: 'Inter'
-            },
+            }, */
             borderRadius: {
                 '9980xl': '9999px',
                 'borders-radius-rounded-full': '9999px',
