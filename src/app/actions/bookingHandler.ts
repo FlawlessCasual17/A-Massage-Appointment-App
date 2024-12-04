@@ -1,8 +1,6 @@
 'use server'
-import { createClient } from '@supabase/supabase-js'
-import { SupabaseClientOptions } from '@supabase/supabase-js'
-// import AppRouteRouteModule from 'next/dist/server/route-modules/app-route/module'
-// TODO: import an external library for Firebase or Supabase
+import { createClient, SupabaseClientOptions } from '@supabase/supabase-js'
+import { Database, TablesInsert } from '../../../database.types'
 
 // Create a Supabase config object
 const supabaseConfig = {
@@ -17,18 +15,34 @@ const supabaseConfig = {
 }
 
 // Create a single supabase client for interacting with your database
-const supabase = createClient(
+const supabase = createClient<Database>(
     supabaseConfig.supabaseUrl,
     supabaseConfig.supabaseKey,
     supabaseConfig.options
 )
 
-export async function bookingHandler() {
+// type database = Database['public']['Tables']['Patients']['Insert']
+
+// A function to handle the booking process
+export async function bookingHandler(patientData: TablesInsert<'Patients'>) {
     try {
-        // Add your booking logic here
-        // Example: Save to database, send confirmation email, etc.
-        return { success: true, message: 'Booking initiated successfully' }
+        const { data, error } = await supabase
+            .from('Patients').insert([patientData]).select()
+
+        if (error != null) throw error
+
+        return {
+            success: true,
+            message: 'Booking initiated successfully',
+            data
+        }
     } catch (error) {
-        return { success: false, message: 'Failed to initiate booking' }
+        const msg = 'Unknown error, please try again later'
+
+        return {
+            success: false,
+            message: 'Failed to initiate booking',
+            error: error instanceof Error ? error.message : msg
+        }
     }
 }
