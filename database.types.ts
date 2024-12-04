@@ -8,7 +8,7 @@ export type Json = string | number | boolean | null | { [key: string]: Json | un
 export type Database = {
     public: {
         Tables: {
-            Patients: {
+            patients: {
                 Row: {
                     dateRegistered: string | null
                     emailAddress: string | null
@@ -16,25 +16,31 @@ export type Database = {
                     id: string
                     surName: string | null
                     timeRegistered: string | null
+                    timeWanted: number
+                    type_of_massage: number
                     zipAddress: string | null
                 }
                 Insert: {
-                    dateRegistered?: string | null
-                    emailAddress?: string | null
-                    firstName?: string | null
-                    id?: string
-                    surName?: string | null
-                    timeRegistered?: string | null
-                    zipAddress?: string | null
+                    dateRegistered: string | null
+                    emailAddress: string | null
+                    firstName: string | null
+                    id: string
+                    surName: string | null
+                    timeRegistered: string | null
+                    timeWanted: number
+                    type_of_massage: number
+                    zipAddress: string | null
                 }
                 Update: {
-                    dateRegistered?: string | null
-                    emailAddress?: string | null
-                    firstName?: string | null
-                    id?: string
-                    surName?: string | null
-                    timeRegistered?: string | null
-                    zipAddress?: string | null
+                    dateRegistered: string | null
+                    emailAddress: string | null
+                    firstName: string | null
+                    id: string
+                    surName: string | null
+                    timeRegistered: string | null
+                    timeWanted: number
+                    type_of_massage: number
+                    zipAddress: string | null
                 }
                 Relationships: []
             }
@@ -128,3 +134,4 @@ export type CompositeTypes<
     : PublicCompositeTypeNameOrOptions extends keyof PublicSchema['CompositeTypes']
         ? PublicSchema['CompositeTypes'][PublicCompositeTypeNameOrOptions]
     : never
+

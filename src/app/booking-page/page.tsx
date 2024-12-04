@@ -6,7 +6,7 @@ import { bookingHandler } from '../actions/bookingHandler'
 export default function Page() {
     const date = new Date()
 
-    type patients = TablesInsert<'Patients'>
+    type patients = TablesInsert<'patients'>
 
     const [formData, setFormData] = useState<patients>({
         firstName: '',
@@ -28,7 +28,7 @@ export default function Page() {
         }
     }
 
-    return (
+    return ( // todo: Implement the functionality from https://www.lavenderandlilymassage.com/
         <div className='max-w-md mx-auto mt-10 p-6 bg-white rounded-lg shadow-lg'>
             <h1 className='text-2xl font-bold mb-6'>Book Your Massage</h1>
             <form onSubmit={handleSubmit} className='space-y-4'>
