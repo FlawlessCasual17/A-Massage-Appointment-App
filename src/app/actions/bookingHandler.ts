@@ -1,4 +1,27 @@
 'use server'
+import { createClient } from '@supabase/supabase-js'
+import { SupabaseClientOptions } from '@supabase/supabase-js'
+// import AppRouteRouteModule from 'next/dist/server/route-modules/app-route/module'
+// TODO: import an external library for Firebase or Supabase
+
+// Create a Supabase config object
+const supabaseConfig = {
+    supabaseUrl: process.env.NEXT_PUBLIC_SUPABASE_URL,
+    supabaseKey: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
+    options: {
+        auth: {
+            persistSession: true
+        },
+        db: { schema: 'public' }
+    } /* as SupabaseClientOptions */
+}
+
+// Create a single supabase client for interacting with your database
+const supabase = createClient(
+    supabaseConfig.supabaseUrl as string,
+    supabaseConfig.supabaseKey as string,
+    supabaseConfig.options
+)
 
 export async function bookingHandler() {
     try {

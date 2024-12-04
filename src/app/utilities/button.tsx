@@ -8,6 +8,7 @@ export default function Button(props: { onClick: msHandler<HTMLInputElement>, va
     async function clickHandler() {
         const r = await bookingHandler()
         // TODO: implement a conditional statement here...
+        // TODO: import an external library for Firebase or Supabase
     }
 
     return <input {...props} type='button' className={`btn ${sty['btn-styling']} ${sty['input-styling']}`} />
