@@ -6,20 +6,20 @@ import { SupabaseClientOptions } from '@supabase/supabase-js'
 
 // Create a Supabase config object
 const supabaseConfig = {
-    supabaseUrl: process.env.NEXT_PUBLIC_SUPABASE_URL,
-    supabaseKey: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
+    supabaseUrl: process.env.NEXT_PUBLIC_SUPABASE_URL as string,
+    supabaseKey: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY as string,
     options: {
         auth: {
             persistSession: true
         },
         db: { schema: 'public' }
-    } /* as SupabaseClientOptions */
+    } as SupabaseClientOptions<any>
 }
 
 // Create a single supabase client for interacting with your database
 const supabase = createClient(
-    supabaseConfig.supabaseUrl as string,
-    supabaseConfig.supabaseKey as string,
+    supabaseConfig.supabaseUrl,
+    supabaseConfig.supabaseKey,
     supabaseConfig.options
 )
 

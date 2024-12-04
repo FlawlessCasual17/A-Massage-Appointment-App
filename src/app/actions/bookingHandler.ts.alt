@@ -1,0 +1,46 @@
+'use server'
+import { createClient } from '@supabase/supabase-js'
+import { SupabaseClientOptions } from '@supabase/supabase-js'
+
+// Enhanced type guard for environment variables
+function isValidConfig(url: string | undefined, key: string | undefined): boolean {
+    return typeof url === 'string' && typeof key === 'string' && url.length > 0 && key.length > 0
+}
+
+// Create a Supabase config object
+const supabaseConfig = {
+    supabaseUrl: process.env.NEXT_PUBLIC_SUPABASE_URL,
+    supabaseKey: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
+    options: {
+        auth: {
+            persistSession: true
+        },
+        db: { schema: 'public' }
+    }
+} satisfies {
+    supabaseUrl: string | undefined,
+    supabaseKey: string | undefined,
+    options: SupabaseClientOptions
+}
+
+// Create supabase client with type guard validation
+const supabase = (() => {
+    if (!isValidConfig(supabaseConfig.supabaseUrl, supabaseConfig.supabaseKey)) {
+        throw new Error('Invalid Supabase configuration: Missing URL or API key')
+    }
+    return createClient(
+        supabaseConfig.supabaseUrl,
+        supabaseConfig.supabaseKey,
+        supabaseConfig.options
+    )
+})()
+
+export async function bookingHandler() {
+    try {
+        // Add your booking logic here
+        // Example: Save to database, send confirmation email, etc.
+        return { success: true, message: 'Booking initiated successfully' }
+    } catch (error) {
+        return { success: false, message: 'Failed to initiate booking' }
+    }
+}

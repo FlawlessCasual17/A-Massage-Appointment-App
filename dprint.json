@@ -11,7 +11,8 @@
     "singleBodyPosition": "sameLine",
     "lineWidth": 120,
     "arguments.preferSingleLine": true,
-    "preferSingleLine": true
+    "preferSingleLine": true,
+    "trailingCommas": "never"
   },
   "excludes": [
     "**/node_modules"
