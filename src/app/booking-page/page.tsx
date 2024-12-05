@@ -74,6 +74,7 @@ export default function Page() {
                         className='w-full p-2 border rounded'
                     />
                 </div>
+                {/* TODO: Add phone number, gender, and other inputs here. */}
                 <Button type='submit' className='w-full bg-blue-500 text-white p-2 rounded hover:bg-blue-600'>
                     Book Appointment
                 </Button>
