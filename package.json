@@ -22,16 +22,13 @@
   },
   "devDependencies": {
     "@types/node": "^20.17.9",
-    "@types/react": "^18.3.12",
+    "@types/react": "^18.3.13",
     "@types/react-dom": "^18.3.1",
     "daisyui": "^4.12.14",
     "eslint": "^9.16.0",
     "eslint-config-next": "15.0.3",
     "postcss": "^8.4.49",
-<<<<<<< HEAD
     "supabase": "^2.0.0",
-=======
->>>>>>> 7dba36a (Update project dependencies, and types for TypeScript)
     "tailwindcss": "^3.4.16",
     "typescript": "^5.7.2"
   }
