@@ -18,6 +18,7 @@
         "name": "next"
       }
     ],
+    "baseUrl": ".",
     "paths": {
       "@/*": [ "./src/*" ]
     },
@@ -28,7 +29,7 @@
     "**/*.ts",
     "**/*.tsx",
     ".next/types/**/*.ts",
-    "src/app/utilities/topSection.js"
+    "src/app/components/utilities/topSection.js"
   ],
   "exclude": [ "node_modules" ],
 

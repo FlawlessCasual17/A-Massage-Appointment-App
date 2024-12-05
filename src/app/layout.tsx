@@ -14,12 +14,13 @@ export const metadata: Metadata = {
     description: 'Book your massage appointment today!'
 }
 
-// type reactNodeType = Readonly<{ children: ReactNode }>
-export default function RootLayout(props: { children: Readonly<ReactNode> }) {
+type reactNodeType = Readonly<{ children: ReactNode }>
+
+export default function RootLayout({ children }: reactNodeType) {
     return (
         <html lang='en'>
             <body className={`${interRegular.variable} antialiased`}>
-                {props.children}
+                {children}
             </body>
         </html>
     )

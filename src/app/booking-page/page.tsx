@@ -2,6 +2,7 @@
 import { FormEvent, useState } from 'react'
 import { TablesInsert } from '../../../database.types'
 import { bookingHandler } from '../actions/bookingHandler'
+import { Button } from 'react-daisyui'
 
 export default function Page() {
     type patients = TablesInsert<'patients'>
@@ -14,6 +15,7 @@ export default function Page() {
         const hours = String(date.getHours()).padStart(2, '0')
         const minutes = String(date.getMinutes()).padStart(2, '0')
         const seconds = String(date.getSeconds()).padStart(2, '0')
+        // Return the current date in the format: yyyy-MM-dd HH:mm:ss
         return `${fullYear}-${month}-${day} ${hours}:${minutes}:${seconds}`
     }
 
@@ -43,7 +45,7 @@ export default function Page() {
 
     return ( // todo: Implement the functionality from https://www.lavenderandlilymassage.com/
         <div className='max-w-md mx-auto mt-10 p-6 bg-white rounded-lg shadow-lg'>
-            <h1 className='text-2xl font-bold mb-6'>Book Your Massage</h1>
+            <h1 className='text-2xl font-bold mb-6'>Finish booking your massage!</h1>
             <form onSubmit={handleSubmit} className='space-y-4'>
                 <div>
                     <label className='block mb-2'>First Name</label>
@@ -72,18 +74,9 @@ export default function Page() {
                         className='w-full p-2 border rounded'
                     />
                 </div>
-                {/* <div>
-                    <label className='block mb-2'>ZIP Code</label>
-                    <input
-                        type='text'
-                        value={formData.zip_address || ''}
-                        onChange={e => setFormData({ ...formData, zipAddress: e.target.value })}
-                        className='w-full p-2 border rounded'
-                    />
-                </div> */}
-                <button type='submit' className='btn w-full bg-blue-500 text-white p-2 rounded hover:bg-blue-600'>
+                <Button type='submit' className='w-full bg-blue-500 text-white p-2 rounded hover:bg-blue-600'>
                     Book Appointment
-                </button>
+                </Button>
             </form>
         </div>
     )
