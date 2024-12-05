@@ -44,7 +44,7 @@ export default function Page() {
     }
 
     return ( // todo: Implement the functionality from https://www.lavenderandlilymassage.com/
-        <div className='max-w-md mx-auto mt-10 p-6 bg-white rounded-lg shadow-lg'>
+        <div className='max-w-md mx-auto mt-10 p-6 rounded-lg shadow-lg ring-2 ring-neutral'>
             <h1 className='text-2xl font-bold mb-6'>Finish booking your massage!</h1>
             <form onSubmit={handleSubmit} className='space-y-4'>
                 <div>

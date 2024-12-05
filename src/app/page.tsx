@@ -1,10 +1,8 @@
 import TopSection from './layouts/topSection'
-import { createClient } from 'utils/supabase/server'
-import { cookies } from 'next/headers'
+import { initSupabaseClient } from '@/utils/supabase/clientInit'
 
 export default async function Home() {
-    const cookieStore = cookies()
-    const supabase = createClient(cookieStore)
+    const supabase = initSupabaseClient()
 
     return (
         <div className='m-6 top-0 left-0 '>
