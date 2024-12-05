@@ -4,17 +4,30 @@ import { TablesInsert } from '../../../database.types'
 import { bookingHandler } from '../actions/bookingHandler'
 
 export default function Page() {
-    const date = new Date()
-
     type patients = TablesInsert<'patients'>
 
+    function getFormattedDate() {
+        const date = new Date()
+        const fullYear = date.getFullYear()
+        const month = String(date.getMonth() + 1).padStart(2, '0')
+        const day = String(date.getDate()).padStart(2, '0')
+        const hours = String(date.getHours()).padStart(2, '0')
+        const minutes = String(date.getMinutes()).padStart(2, '0')
+        const seconds = String(date.getSeconds()).padStart(2, '0')
+        return `${fullYear}-${month}-${day} ${hours}:${minutes}:${seconds}`
+    }
+
     const [formData, setFormData] = useState<patients>({
-        firstName: '',
-        surName: '',
-        emailAddress: '',
-        zipAddress: '',
-        dateRegistered: date.toISOString().split('T')[0],
-        timeRegistered: date.toTimeString().split('T')[0]
+        first_name: '',
+        surname: '',
+        email: '',
+        date_registered: getFormattedDate(),
+        type_of_massage: 1, // Default value, can be updated based on selection
+        gender: null,
+        notes: null,
+        phone_number: null,
+        appointment_date: null,
+        user_id: null
     })
 
     async function handleSubmit(event: FormEvent) {
@@ -36,8 +49,8 @@ export default function Page() {
                     <label className='block mb-2'>First Name</label>
                     <input
                         type='text'
-                        value={formData.firstName || ''}
-                        onChange={e => setFormData({ ...formData, firstName: e.target.value })}
+                        value={formData.first_name || ''}
+                        onChange={e => setFormData({ ...formData, first_name: e.target.value })}
                         className='w-full p-2 border rounded'
                     />
                 </div>
@@ -45,8 +58,8 @@ export default function Page() {
                     <label className='block mb-2'>Surname</label>
                     <input
                         type='text'
-                        value={formData.surName || ''}
-                        onChange={e => setFormData({ ...formData, surName: e.target.value })}
+                        value={formData.surname || ''}
+                        onChange={e => setFormData({ ...formData, surname: e.target.value })}
                         className='w-full p-2 border rounded'
                     />
                 </div>
@@ -54,20 +67,20 @@ export default function Page() {
                     <label className='block mb-2'>Email</label>
                     <input
                         type='email'
-                        value={formData.emailAddress || ''}
-                        onChange={e => setFormData({ ...formData, emailAddress: e.target.value })}
+                        value={formData.email || ''}
+                        onChange={e => setFormData({ ...formData, email: e.target.value })}
                         className='w-full p-2 border rounded'
                     />
                 </div>
-                <div>
+                {/* <div>
                     <label className='block mb-2'>ZIP Code</label>
                     <input
                         type='text'
-                        value={formData.zipAddress || ''}
+                        value={formData.zip_address || ''}
                         onChange={e => setFormData({ ...formData, zipAddress: e.target.value })}
                         className='w-full p-2 border rounded'
                     />
-                </div>
+                </div> */}
                 <button type='submit' className='btn w-full bg-blue-500 text-white p-2 rounded hover:bg-blue-600'>
                     Book Appointment
                 </button>
