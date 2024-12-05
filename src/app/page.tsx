@@ -1,5 +1,5 @@
 import TopSection from './layouts/topSection'
-import { initSupabaseClient } from '@/utils/supabase/clientInit'
+import { initSupabaseClient } from 'utils/supabase/supabase/clientInit'
 
 export default async function Home() {
     const supabase = initSupabaseClient()
