@@ -1,7 +1,7 @@
 'use client'
 import { useEffect, useState } from 'react'
 import { initSupabaseClient } from '../utils/supabase/clientInit'
-import { Card, Button, Select, Avatar } from 'react-daisyui'
+import { Card, Button, Select } from 'react-daisyui'
 import './styles.css'
 
 interface MassageType {
@@ -15,7 +15,7 @@ interface Therapist {
     last_name: string
     specialties: string[]
     qualification: number
-    availability: string | null
+    availability: boolean | null
 }
 // TODO: Fix what is causing the data to not be fetched from Supabase.
 export default function Page() {
@@ -24,22 +24,44 @@ export default function Page() {
     const [selectedMassage, setSelectedMassage] = useState<number | null>(null)
     const supabase = initSupabaseClient()
 
+    const prices = [100, 125, 150]
+
+    const massageOptions = Array.from({ length: 3 }, (_, i) => ({
+        duration: ['60', '75', '90'][i],
+        price: prices[i]
+    }))
+
     useEffect(() => {
-        !async function() {
-            const [massageResponse, therapistResponse] = await Promise.all([
-                (await supabase)
-                    ?.schema('public')
-                    ?.from('massage_types')
-                    .select('*'),
-                (await supabase)
-                    ?.schema('public')
-                    ?.from('therapists')
-                    .select('*')
-            ])
-            // Equivalent to their respective "if" statements.
-            massageResponse?.data && setMassageTypes(massageResponse.data)
-            therapistResponse?.data && setTherapists(therapistResponse.data)
-        }() // <- Needed for the Immediately Invoked
+        (async function() {
+            try {
+                const supabaseClient = await supabase
+                const [massageResponse, therapistResponse] = await Promise.all([
+                    supabaseClient?.from('massage_types').select('*'),
+                    supabaseClient?.from('therapists').select('*')
+                ])
+
+                console.log('Massage Response:', massageResponse)
+                console.log('Therapist Response:', therapistResponse)
+
+                massageResponse?.data && setMassageTypes(massageResponse.data)
+                therapistResponse?.data && setTherapists(therapistResponse.data)
+            } catch (error) {
+                console.error(`Fetching error: ${error}`)
+            }
+        })() // <- Needed for the Immediately Invoked
+            //    Function Expression (IIFE) to work properly.
+    }, [supabase])
+
+    useEffect(() => {
+        (async function() {
+            try {
+                const supabaseClient = await supabase
+                const { data, error } = await supabaseClient.from('massage_types').select('count')
+                console.log('Connection test:', { data, error })
+            } catch (error) {
+                console.error(`Connection test failed: ${error}`)
+            }
+        })() // <- Needed for the Immediately Invoked
             //    Function Expression (IIFE) to work properly.
     }, [supabase])
 
@@ -50,7 +72,7 @@ export default function Page() {
                 {/* Massage Types Section */}
                 <div className='space-y-4'>
                     <h2 className='text-2xl font-semibold mb-4'>Select Massage Type</h2>
-                    {/* {massageTypes.map(massage => (
+                    {massageTypes.map(massage => (
                         <Card
                             key={massage.type_of_massage}
                             className={`cursor-pointer hover:shadow-lg transition-shadow ${
@@ -61,12 +83,18 @@ export default function Page() {
                                 <Card.Title tag='h2'>{massage.name}</Card.Title>
                                 <p>{massage.name}</p>
                                 <div className='flex justify-between mt-4'>
-                                    <span>{massage.duration} minutes</span>
-                                    <span className='font-bold'>${massage.price}</span>
+                                    <Select className='w-1/3'>
+                                        {massageOptions.map((option, index) =>
+                                            <Select.Option key={index}>
+                                                {option.duration} minutes - ${option.price}
+                                            </Select.Option>
+                                        )}
+                                    </Select>
+                                    <span className='font-bold'>Starting from ${Math.min(...prices)}</span>
                                 </div>
                             </Card.Body>
                         </Card>
-                    ))} */}
+                    ))}
                 </div>
                 {/* Therapists Section */}
                 <div>

@@ -181,8 +181,8 @@ export type Database = {
             }
             therapists: {
                 Row: {
-                    /** Therapist's working hours and availability */
-                    availability: string | null
+                    /** Therapist's availability */
+                    availability: boolean | null
                     /** Therapist's email address */
                     email: string
                     /** Therapist's first name */
@@ -201,8 +201,8 @@ export type Database = {
                     user_id: string | null
                 }
                 Insert: {
-                    /** Therapist's working hours and availability */
-                    availability?: string | null
+                    /** Therapist's availability */
+                    availability?: boolean | null
                     /** Therapist's email address */
                     email: string
                     /** Therapist's first name */
@@ -221,8 +221,8 @@ export type Database = {
                     user_id?: string | null
                 }
                 Update: {
-                    /** Therapist's working hours and availability */
-                    availability?: string | null
+                    /** Therapist's availability */
+                    availability?: boolean | null
                     /** Therapist's email address */
                     email?: string
                     /** Therapist's first name */
