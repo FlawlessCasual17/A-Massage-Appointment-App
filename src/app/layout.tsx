@@ -14,9 +14,9 @@ export const metadata: Metadata = {
     description: 'Book your massage appointment today!'
 }
 
-type reactNodeType = Readonly<{ children: ReactNode }>
+type ReadonlyReactNode = Readonly<{ children: ReactNode }>
 
-export default function RootLayout({ children }: reactNodeType) {
+export default function RootLayout({ children }: ReadonlyReactNode) {
     return (
         <html lang='en'>
             <body className={`${interRegular.variable} antialiased`}>

@@ -1,9 +1,6 @@
 import TopSection from './layouts/topSection'
-import { initSupabaseClient } from 'utils/supabase/supabase/clientInit'
 
-export default async function Home() {
-    const supabase = initSupabaseClient()
-
+export default function Home() {
     return (
         <div className='m-6 top-0 left-0 '>
             <TopSection />

@@ -1,0 +1,9 @@
+.submit {
+    width: 100%;
+    border-width: 2px;
+    @apply bg-emerald-700 border-emerald-600 text-[#e0e0e0]
+}
+
+.submit:hover {
+    @apply bg-emerald-600 border-emerald-500
+}

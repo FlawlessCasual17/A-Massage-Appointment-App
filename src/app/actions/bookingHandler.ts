@@ -21,10 +21,10 @@ const supabase = createClient<Database>(
     supabaseConfig.options
 )
 
-// type database = Database['public']['Tables']['patients']['Insert']
+type Patients = TablesInsert<'patients'>
 
 // A function to handle the booking process
-export async function bookingHandler(patientData: TablesInsert<'patients'>) {
+export async function bookingHandler(patientData: Patients) {
     try {
         const { data, error } = await supabase
             .from('patients').insert([patientData]).select()
