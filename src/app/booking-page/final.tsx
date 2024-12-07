@@ -1,24 +1,13 @@
 'use client'
 import { Dispatch, FormEvent, SetStateAction, useState } from 'react'
-import { bookingHandler } from '../actions/bookingHandler'
 import { Button, Input } from 'react-daisyui'
+import { Patients } from 'types'
+import { bookingHandler } from '../actions/bookingHandler'
 import './styles.css'
 
-// Define a new type for the form data
-interface Patient {
-    type_of_massage: number // Foreign key referencing massage_types table
-    first_name: string
-    last_name: string
-    gender: number // Foreign key referencing genders table
-    email: string
-    phone_number: string
-    therapist_id: string // UUID
-    appointment_id: number // Foreign key referencing appointments table
-}
+type PatientDispatchFunction = Dispatch<SetStateAction<Patients>>
 
-type PatientDispatchFunction = Dispatch<SetStateAction<Patient>>
-
-export default function Final(p: { formData: Patient, setFormData: PatientDispatchFunction }) {
+export default function Final(p: { formData: Patients, setFormData: PatientDispatchFunction }) {
     async function handleSubmit(event: FormEvent) {
         event.preventDefault()
         const result = await bookingHandler(p.formData)
@@ -37,7 +26,7 @@ export default function Final(p: { formData: Patient, setFormData: PatientDispat
             <form onSubmit={handleSubmit} className='space-y-4'>
                 <div>
                     <label className='block mb-2'>First Name</label>
-                    <input
+                    <Input
                         type='text'
                         value={p.formData.first_name || ''}
                         onChange={e => p.setFormData({ ...p.formData, first_name: e.target.value })}
@@ -46,7 +35,7 @@ export default function Final(p: { formData: Patient, setFormData: PatientDispat
                 </div>
                 <div>
                     <label className='block mb-2'>Surname</label>
-                    <input
+                    <Input
                         type='text'
                         value={p.formData.last_name || ''}
                         onChange={e => p.setFormData({ ...p.formData, last_name: e.target.value })}
@@ -65,7 +54,7 @@ export default function Final(p: { formData: Patient, setFormData: PatientDispat
                 {/* TODO: Add phone number, gender, and other inputs here. */}
                 <div>
                     <label className='block mb-2'>Phone Number</label>
-                    <input
+                    <Input
                         type='tel'
                         value={p.formData.phone_number || ''}
                         onChange={e => p.setFormData({ ...p.formData, phone_number: e.target.value })}

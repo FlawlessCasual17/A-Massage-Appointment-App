@@ -1,54 +1,13 @@
 'use client'
 import { useEffect, useState } from 'react'
-import { Card, Button, Select, Swap } from 'react-daisyui'
+import { Card, Button, Select } from 'react-daisyui'
 import Final from './final'
+import { Genders, MassageType, Therapists, Patients, Appointments } from 'types'
 import './styles.css'
-
-
-
-// Type for "massage_types" table
-interface MassageType {
-    id: number
-    name: string
-}
-
-// Type for "therapists" table
-interface Therapist {
-    uuid: string // UUID
-    first_name: string // Therapist's first name
-    last_name: string // Therapist's last name
-    gender: number // Foreign key referencing genders table
-    email: string // Therapist's email
-    phone_number: string // Therapist's phone number
-    qualifications: string // Therapist's qualifications
-    specialties: string // Therapist's specialties
-    availability?: boolean // Therapist's availability (optional)
-}
-
-// Type for "patients" table
-interface Patient {
-    type_of_massage: number // Foreign key referencing massage_types table
-    first_name: string
-    last_name: string
-    gender: number // Foreign key referencing "genders" table
-    email: string
-    phone_number: string
-    therapist_id: string // UUID
-    appointment_id: number // Foreign key referencing appointments table
-}
-
-// Type for "appointments" table
-interface Appointments {
-    type_of_massage: number; // Foreign key referencing massage_types table
-    scheduled_date?: string; // Timestamp with time zone
-    notes?: string; // Optional
-    therapist_id: string; // UUID
-    patient_id: number; // Foreign key referencing patients table
-}
 
 export default function Page() {
     const [massageTypes, setMassageTypes] = useState<MassageType[]>([])
-    const [therapists, setTherapists] = useState<Therapist[]>([])
+    const [therapists, setTherapists] = useState<Therapists[]>([])
     const [selectedMassage, setSelectedMassage] = useState<number | null>(null)
 
     // New state to manage layout switching
@@ -60,12 +19,12 @@ export default function Page() {
         price: prices[i]
     }))
 
-    const [formData, setFormData] = useState<Patient>({
+    const [patientData, setPatientData] = useState<Patients>({
         // The default value can be updated based on selection
+        id: 0,
         first_name: '',
         last_name: '',
         email: '',
-        type_of_massage: 0,
         gender: 0,
         phone_number: '',
         therapist_id: '',
@@ -92,7 +51,7 @@ export default function Page() {
     const toggleLayout = () => setIsFinalLayout(prev => !prev)
 
     {/* Conditional rendering based on the isFinalLayout state */}
-    return isFinalLayout ? <Final {...{ formData, setFormData }} /> : (
+    return isFinalLayout ? <Final {...{ formData: patientData, setFormData: setPatientData }} /> : (
         <div className='container mx-auto p-6'>
             <h1 className='text-3xl font-bold mb-8 text-center'>Book Your Massage Session</h1>
 
