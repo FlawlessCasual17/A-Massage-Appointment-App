@@ -1,14 +1,11 @@
 'use server'
-import { neon } from '@neondatabase/serverless'
-import { Patients } from 'types'
-
-const sql = neon(process.env.POSTGRES_URL_NO_SSL as string)
+import { Patients } from '@/utils/types'
+import { sql } from '@/utils/variables'
 
 export async function bookingHandler(patient: Patients) {
     try {
         const result = await sql`
             INSERT INTO "public"."patients" (
-                "type_of_massage",
                 "first_name",
                 "last_name",
                 "gender",
@@ -19,8 +16,8 @@ export async function bookingHandler(patient: Patients) {
             ) VALUES (
                 ${patient.first_name},
                 ${patient.last_name},
+                ${patient.gender},
                 ${patient.email},
-                ${patient.gender}
                 ${patient.phone_number},
                 ${patient.therapist_id},
                 ${patient.appointment_id}

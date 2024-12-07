@@ -1,16 +1,16 @@
 'use client'
-import { Dispatch, FormEvent, SetStateAction, useState } from 'react'
+import { Dispatch, FormEvent, SetStateAction } from 'react'
 import { Button, Input } from 'react-daisyui'
-import { Patients } from 'types'
+import { Appointments, Genders, Patients } from '@/utils/types'
 import { bookingHandler } from '../actions/bookingHandler'
 import './styles.css'
 
-type PatientDispatchFunction = Dispatch<SetStateAction<Patients>>
+type props = { formData: Patients, setFormData: Dispatch<SetStateAction<Patients>> }
 
-export default function Final(p: { formData: Patients, setFormData: PatientDispatchFunction }) {
+export default function Final({ formData, setFormData }: props) {
     async function handleSubmit(event: FormEvent) {
         event.preventDefault()
-        const result = await bookingHandler(p.formData)
+        const result = await bookingHandler(formData)
         if (result.success) {
             // Handle success (e.g., show success message, redirect)
             console.log(result)
@@ -28,17 +28,17 @@ export default function Final(p: { formData: Patients, setFormData: PatientDispa
                     <label className='block mb-2'>First Name</label>
                     <Input
                         type='text'
-                        value={p.formData.first_name || ''}
-                        onChange={e => p.setFormData({ ...p.formData, first_name: e.target.value })}
+                        value={formData.first_name || ''}
+                        onChange={e => setFormData({ ...formData, first_name: e.target.value })}
                         className='w-full p-2 border rounded'
                     />
                 </div>
                 <div>
-                    <label className='block mb-2'>Surname</label>
+                    <label className='block mb-2'>Last Name/Surname</label>
                     <Input
                         type='text'
-                        value={p.formData.last_name || ''}
-                        onChange={e => p.setFormData({ ...p.formData, last_name: e.target.value })}
+                        value={formData.last_name || ''}
+                        onChange={e => setFormData({ ...formData, last_name: e.target.value })}
                         className='w-full p-2 border rounded'
                     />
                 </div>
@@ -46,8 +46,17 @@ export default function Final(p: { formData: Patients, setFormData: PatientDispa
                     <label className='block mb-2'>Email</label>
                     <input
                         type='email'
-                        value={p.formData.email || ''}
-                        onChange={e => p.setFormData({ ...p.formData, email: e.target.value })}
+                        value={formData.email || ''}
+                        onChange={e => setFormData({ ...formData, email: e.target.value })}
+                        className='w-full p-2 border rounded'
+                    />
+                </div>
+                <div>
+                    <label className='block mb-2'>Gender</label>
+                    <Input
+                        type='tel'
+                        value={formData.phone_number || ''}
+                        onChange={e => setFormData({ ...formData, phone_number: e.target.value })}
                         className='w-full p-2 border rounded'
                     />
                 </div>
@@ -56,8 +65,17 @@ export default function Final(p: { formData: Patients, setFormData: PatientDispa
                     <label className='block mb-2'>Phone Number</label>
                     <Input
                         type='tel'
-                        value={p.formData.phone_number || ''}
-                        onChange={e => p.setFormData({ ...p.formData, phone_number: e.target.value })}
+                        value={formData.phone_number || ''}
+                        onChange={e => setFormData({ ...formData, phone_number: e.target.value })}
+                        className='w-full p-2 border rounded'
+                    />
+                </div>
+                <div>
+                    <label className='block mb-2'>Phone Number</label>
+                    <Input
+                        type='tel'
+                        value={formData.phone_number || ''}
+                        onChange={e => setFormData({ ...formData, phone_number: e.target.value })}
                         className='w-full p-2 border rounded'
                     />
                 </div>

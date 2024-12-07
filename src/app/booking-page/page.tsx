@@ -2,7 +2,7 @@
 import { useEffect, useState } from 'react'
 import { Card, Button, Select } from 'react-daisyui'
 import Final from './final'
-import { Genders, MassageType, Therapists, Patients, Appointments } from 'types'
+import { Genders, MassageType, Therapists, Patients, Appointments } from '@/utils/types'
 import './styles.css'
 
 export default function Page() {
@@ -19,7 +19,7 @@ export default function Page() {
         price: prices[i]
     }))
 
-    const [patientData, setPatientData] = useState<Patients>({
+    const [formData, setFormData] = useState<Patients>({
         // The default value can be updated based on selection
         id: 0,
         first_name: '',
@@ -51,7 +51,7 @@ export default function Page() {
     const toggleLayout = () => setIsFinalLayout(prev => !prev)
 
     {/* Conditional rendering based on the isFinalLayout state */}
-    return isFinalLayout ? <Final {...{ formData: patientData, setFormData: setPatientData }} /> : (
+    return isFinalLayout ? <Final {...{ formData, setFormData }} /> : (
         <div className='container mx-auto p-6'>
             <h1 className='text-3xl font-bold mb-8 text-center'>Book Your Massage Session</h1>
 
