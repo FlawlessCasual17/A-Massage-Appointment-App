@@ -1,40 +1,46 @@
 'use server'
-import { createClient, SupabaseClientOptions } from '@supabase/supabase-js'
-import { Database, TablesInsert } from '../../../database.types'
+import { neon } from '@neondatabase/serverless'
 
-// Create a Supabase config object
-const supabaseConfig = {
-    supabaseUrl: process.env.NEXT_PUBLIC_SUPABASE_URL as string,
-    supabaseKey: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY as string,
-    options: {
-        auth: {
-            persistSession: true
-        },
-        db: { schema: 'public' }
-    } as SupabaseClientOptions<any>
+const sql = neon(process.env.POSTGRES_URL_NO_SSL as string)
+
+type Patient = {
+    type_of_massage: number // Not null
+    first_name: string // Not null
+    last_name: string // Not null
+    gender: number // Not null
+    email: string // Not null
+    phone_number: string // Not null
+    therapist_id: string // UUID, not null
+    appointment_id: number // Not null
 }
 
-// Create a single supabase client for interacting with your database
-const supabase = createClient<Database>(
-    supabaseConfig.supabaseUrl,
-    supabaseConfig.supabaseKey,
-    supabaseConfig.options
-)
-
-type Patients = TablesInsert<'patients'>
-
-// A function to handle the booking process
-export async function bookingHandler(patientData: Patients) {
+export async function bookingHandler(patient: Patient) {
     try {
-        const { data, error } = await supabase
-            .from('patients').insert([patientData]).select()
-
-        if (error != null) throw error
+        const result = await sql`
+            INSERT INTO "public"."patients" (
+                "type_of_massage",
+                "first_name",
+                "last_name",
+                "gender",
+                "email",
+                "phone_number",
+                "therapist_id",
+                "appointment_id"
+            ) VALUES (
+                ${patient.type_of_massage}
+                ${patient.first_name},
+                ${patient.last_name},
+                ${patient.email},
+                ${patient.gender}
+                ${patient.phone_number},
+                ${patient.therapist_id},
+                ${patient.appointment_id}
+            ) RETURNING *`
 
         return {
             success: true,
             message: 'Booking initiated successfully',
-            data
+            data: result[0]
         }
     } catch (error) {
         const msg = 'Unknown error, please try again later'

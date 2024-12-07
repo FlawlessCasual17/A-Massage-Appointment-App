@@ -7,3 +7,13 @@
 .submit:hover {
     @apply bg-emerald-600 border-emerald-500
 }
+
+.m-type {
+    cursor: pointer;
+    @apply hover:shadow-lg transition-shadow
+}
+
+.choice {
+    border-width: 2px;
+    @apply border-neutral
+}

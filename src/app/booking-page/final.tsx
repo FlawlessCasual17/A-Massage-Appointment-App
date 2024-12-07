@@ -1,41 +1,27 @@
 'use client'
-import { FormEvent, useState } from 'react'
-import { TablesInsert } from '../../../database.types'
+import { Dispatch, FormEvent, SetStateAction, useState } from 'react'
 import { bookingHandler } from '../actions/bookingHandler'
 import { Button, Input } from 'react-daisyui'
 import './styles.css'
 
-type Patients = TablesInsert<'patients'>
+// Define a new type for the form data
+interface Patient {
+    type_of_massage: number // Foreign key referencing massage_types table
+    first_name: string
+    last_name: string
+    gender: number // Foreign key referencing genders table
+    email: string
+    phone_number: string
+    therapist_id: string // UUID
+    appointment_id: number // Foreign key referencing appointments table
+}
 
-export default function Final() {
-    function getFormattedDate() {
-        const date = new Date()
-        const fullYear = date.getFullYear()
-        const month = String(date.getMonth() + 1).padStart(2, '0')
-        const day = String(date.getDate()).padStart(2, '0')
-        const hours = String(date.getHours()).padStart(2, '0')
-        const minutes = String(date.getMinutes()).padStart(2, '0')
-        const seconds = String(date.getSeconds()).padStart(2, '0')
-        // Return the current date in the format: yyyy-MM-dd HH:mm:ss
-        return `${fullYear}-${month}-${day} ${hours}:${minutes}:${seconds}`
-    }
+type PatientDispatchFunction = Dispatch<SetStateAction<Patient>>
 
-    const [formData, setFormData] = useState<Patients>({
-        first_name: '',
-        surname: '',
-        email: '',
-        date_registered: getFormattedDate(),
-        type_of_massage: 1, // Default value, can be updated based on selection
-        gender: null,
-        notes: null,
-        phone_number: null,
-        appointment_date: null,
-        user_id: null
-    })
-
+export default function Final(p: { formData: Patient, setFormData: PatientDispatchFunction }) {
     async function handleSubmit(event: FormEvent) {
         event.preventDefault()
-        const result = await bookingHandler(formData)
+        const result = await bookingHandler(p.formData)
         if (result.success) {
             // Handle success (e.g., show success message, redirect)
             console.log(result)
@@ -44,7 +30,7 @@ export default function Final() {
         }
     }
 
-    return ( // todo: Implement the functionality from https://www.lavenderandlilymassage.com/
+    return (
         <div className='max-w-md mx-auto mt-10 p-6 rounded-lg shadow-lg ring-2 ring-neutral'>
             <h1 className='text-2xl font-bold mb-6'>Finish booking your massage!</h1>
             <form onSubmit={handleSubmit} className='space-y-4'>
@@ -52,8 +38,8 @@ export default function Final() {
                     <label className='block mb-2'>First Name</label>
                     <input
                         type='text'
-                        value={formData.first_name || ''}
-                        onChange={e => setFormData({ ...formData, first_name: e.target.value })}
+                        value={p.formData.first_name || ''}
+                        onChange={e => p.setFormData({ ...p.formData, first_name: e.target.value })}
                         className='w-full p-2 border rounded'
                     />
                 </div>
@@ -61,8 +47,8 @@ export default function Final() {
                     <label className='block mb-2'>Surname</label>
                     <input
                         type='text'
-                        value={formData.surname || ''}
-                        onChange={e => setFormData({ ...formData, surname: e.target.value })}
+                        value={p.formData.last_name || ''}
+                        onChange={e => p.setFormData({ ...p.formData, last_name: e.target.value })}
                         className='w-full p-2 border rounded'
                     />
                 </div>
@@ -70,13 +56,24 @@ export default function Final() {
                     <label className='block mb-2'>Email</label>
                     <input
                         type='email'
-                        value={formData.email || ''}
-                        onChange={e => setFormData({ ...formData, email: e.target.value })}
+                        value={p.formData.email || ''}
+                        onChange={e => p.setFormData({ ...p.formData, email: e.target.value })}
                         className='w-full p-2 border rounded'
                     />
                 </div>
                 {/* TODO: Add phone number, gender, and other inputs here. */}
-                <Button type='submit' className='submit'>Book Appointment</Button>
+                <div>
+                    <label className='block mb-2'>Phone Number</label>
+                    <input
+                        type='tel'
+                        value={p.formData.phone_number || ''}
+                        onChange={e => p.setFormData({ ...p.formData, phone_number: e.target.value })}
+                        className='w-full p-2 border rounded'
+                    />
+                </div>
+                <Button type='submit' className='submit'>
+                    Book Appointment
+                </Button>
             </form>
         </div>
     )
