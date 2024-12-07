@@ -4,7 +4,11 @@
     "config:recommended"
   ],
   "autoApprove": true,
-  "automergeStrategy": "merge-commit",
+  "assignAutomerge": true,
+  "automergeStrategy": "rebase",
+  "allowCustomCrateRegistries": true,
+  "allowPlugins": true,
+  "allowScripts": true,
   "automergeType": "pr",
   "automerge": true
 }
