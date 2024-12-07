@@ -15,5 +15,6 @@
 
 .choice {
     border-width: 2px;
+    border-radius: 12px;
     @apply border-neutral
 }

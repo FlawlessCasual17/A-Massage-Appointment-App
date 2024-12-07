@@ -27,6 +27,7 @@ export default function Final(p: { formData: Patient, setFormData: PatientDispat
             console.log(result)
         } else {
             // Handle error (e.g., show error message)
+            console.error(`An error occurred: ${result}`)
         }
     }
 
