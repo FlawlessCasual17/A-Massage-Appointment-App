@@ -3,15 +3,15 @@ export interface Appointments {
     /** The id of the massage appointment. */
     id: number
     /** The type of massage the patient is booked for. */
-    type_of_massage: number; // Foreign key referencing massage_types table
+    type_of_massage: number // Foreign key referencing massage_types table
     /** The scheduled date of the appointment. */
-    scheduled_date?: string; // Timestamp with time zone
+    scheduled_date?: string // Timestamp with time zone
     /** Additional notes. */
-    notes?: string; // Optional
+    notes?: string // Optional
     /** The id of the therapist assigned to the appointment. */
-    therapist_id: string; // UUID
+    therapist_id: string // UUID
     /** The id of the patient about to enjoy their massage appointment. */
-    patient_id: number; // Foreign key referencing patients table
+    patient_id: number // Foreign key referencing patients table
 }
 
 /** A table for data related to genders. */

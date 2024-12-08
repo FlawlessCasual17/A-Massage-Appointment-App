@@ -4,9 +4,6 @@ import js from '@eslint/js';
 import { FlatCompat } from '@eslint/eslintrc';
 import stylisticJs from '@stylistic/eslint-plugin-js';
 
-/*
-I have no idea what the following below do, all I know is its helpful.
-*/
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 const compat = new FlatCompat({
@@ -24,6 +21,8 @@ export default [...compat.extends('next/core-web-vitals'), {
     quotes: ['warn', 'single'],
     'jsx-quotes': ['warn', 'prefer-single'],
     'quote-props': ['error', 'as-needed'],
-    '@stylistic/js/object-curly-spacing': ['error', 'always', { objectsInObjects: false }]
+    '@stylistic/js/object-curly-spacing': [
+      'error', 'always', { objectsInObjects: false }
+    ]
   }
 }]

@@ -2,58 +2,45 @@
 import { useEffect, useState } from 'react'
 import { Card, Button, Select } from 'react-daisyui'
 import Final from './final'
-import { Genders, MassageType, Therapists, Patients, Appointments } from '@/utils/types'
+import { MassageType, Therapists } from '@/utils/types'
 import './styles.css'
 
 export default function Page() {
     const [massageTypes, setMassageTypes] = useState<MassageType[]>([])
     const [therapists, setTherapists] = useState<Therapists[]>([])
     const [selectedMassage, setSelectedMassage] = useState<number | null>(null)
-
-    // New state to manage layout switching
+    const [selectedTherapist, setSelectedTherapist] = useState<string | null>(null)
     const [isFinalLayout, setIsFinalLayout] = useState<boolean>(false)
 
     const prices = [100, 125, 150]
-    const massageOptions = Array.from({ length: 3 }, (_, i) => ({
+    const options = Array.from({ length: 3 }, (_, i) => ({
         duration: ['60', '75', '90'][i],
         price: prices[i]
     }))
 
-    const [formData, setFormData] = useState<Patients>({
-        // The default value can be updated based on selection
-        id: 0,
-        first_name: '',
-        last_name: '',
-        email: '',
-        gender: 0,
-        phone_number: '',
-        therapist_id: '',
-        appointment_id: 0
-    })
+    // Function to toggle layout
+    const toggleLayout = () => setIsFinalLayout(prev => !prev)
 
     useEffect(() => {
         (async function() {
             try {
-                const massageTypesResponse = await fetch('/api/massage_types')
-                const therapistsResponse = await fetch('/api/therapists')
+                const mResponse = await fetch('/api/massage_types')
+                const tResponse = await fetch('/api/therapists')
 
-                const massageTypes = await massageTypesResponse.json()
-                const therapists = await therapistsResponse.json()
-
-                setMassageTypes(massageTypes); setTherapists(therapists)
+                setMassageTypes(await mResponse.json())
+                setTherapists(await tResponse.json())
             } catch (error) {
                 console.error(`Fetching error: ${error}`)
             }
         })()
     }, [])
 
-    // Function to toggle layout
-    const toggleLayout = () => setIsFinalLayout(prev => !prev)
-
     {/* Conditional rendering based on the isFinalLayout state */}
-    return isFinalLayout ? <Final {...{ formData, setFormData }} /> : (
-        <div className='container mx-auto p-6'>
-            <h1 className='text-3xl font-bold mb-8 text-center'>Book Your Massage Session</h1>
+    return isFinalLayout ? <Final {...{ selectedMassage, selectedTherapist }} /> : (
+        <div className='container mx-auto p-6 transition-all'>
+            <h1 className='text-3xl font-bold mb-8 text-center'>
+                Book Your Massage Session
+            </h1>
 
             {/* Button to toggle layouts */}
             {/* <div className='mb-4 text-center'>
@@ -66,20 +53,22 @@ export default function Page() {
                 {/* Massage Types Section */}
                 <div className='space-y-4'>
                     <h2 className='text-2xl font-semibold mb-4'>Select Massage Type</h2>
-                    {massageTypes.map(massage => (
+                    {massageTypes.map(m => (
                         <Card
-                            key={massage.id}
-                            className={`m-type ${ selectedMassage === massage.id ? 'choice' : '' }`}
-                            onClick={() => setSelectedMassage(massage.id)}
+                            key={m.id}
+                            className={`type ${selectedMassage === m.id ? 'choice' : ''}`}
+                            onClick={() => setSelectedMassage(m.id)}
                         >
                             <Card.Body>
-                                <Card.Title tag='h2'>{massage.name}</Card.Title>
-                                <p>{massage.name}</p>
+                                <Card.Title tag='h2'>{m.name}</Card.Title>
+                                <p>{m.name}</p>
                                 <div className='flex justify-between mt-4'>
-                                    <Select key={massage.id} className='w-1/3'>
-                                        {massageOptions.map((option, index) => <Select.Option key={index}>
-                                            {option.duration} minutes - ${option.price}
-                                        </Select.Option>)}
+                                    <Select key={m.id} className='w-1/3'>
+                                        {options.map((opt, idx) =>
+                                            <Select.Option key={idx}>
+                                                {opt.duration} minutes - ${opt.price}
+                                            </Select.Option>
+                                        )}
                                     </Select>
                                     <span className='font-bold'>
                                         Starting from ${Math.min(...prices)}
@@ -93,18 +82,24 @@ export default function Page() {
                 <div>
                     <h2 className='text-2xl font-semibold mb-4'>Choose Your Therapist</h2>
                     <div className='space-y-4'>
-                        {therapists.map((therapist, index) => (
-                            <Card key={index} className='hover:shadow-lg transition-shadow'>
+                        {therapists.map(t => (
+                            <Card
+                                key={t.uuid}
+                                className={`type ${selectedTherapist === t.uuid ? 'choice' : ''}`}
+                                onClick={() => setSelectedTherapist(t.uuid)}
+                            >
                                 <Card.Body>
-                                    <div className='flex items-center gap-4'>
-                                        <div>
-                                            <h3 className='font-bold text-lg'>{therapist.first_name}</h3>
-                                            <p className='text-sm'>{therapist.qualifications} years experience</p>
-                                            <div className='flex flex-wrap gap-2 mt-2'>
-                                                <span className='badge badge-primary badge-outline'>
-                                                    {therapist.specialties}
-                                                </span>
-                                            </div>
+                                    <div className="flex items-center gap-4">
+                                        <h3 className="font-bold text-lg">
+                                            {t.first_name} {t.last_name}
+                                        </h3>
+                                        <p className="text-sm">{t.email}</p>
+                                        <p className="text-sm">{t.phone_number}</p>
+                                        <p className="text-sm">{t.qualifications}</p>
+                                        <div className="flex flex-wrap gap-2 mt-2">
+                                            <span className="badge badge-primary badge-outline">
+                                                {t.specialties}
+                                            </span>
                                         </div>
                                     </div>
                                 </Card.Body>
@@ -114,7 +109,7 @@ export default function Page() {
                 </div>
                 <div className='mt-8 text-center'>
                     <Button
-                        color='primary'
+                        color={!selectedMassage ? 'error' : 'success'}
                         size='lg'
                         disabled={!selectedMassage}
                         onClick={toggleLayout}

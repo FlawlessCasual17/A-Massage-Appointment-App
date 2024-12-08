@@ -2,6 +2,12 @@
 import { Patients } from '@/utils/types'
 import { sql } from '@/utils/variables'
 
+type Outcome = {
+    success: boolean
+    message: string
+    data?: string | any
+}
+
 export async function bookingHandler(patient: Patients) {
     try {
         const result = await sql`
@@ -27,14 +33,14 @@ export async function bookingHandler(patient: Patients) {
             success: true,
             message: 'Booking initiated successfully',
             data: result[0]
-        }
+        } as Outcome
     } catch (error) {
         const msg = 'Unknown error, please try again later'
 
         return {
             success: false,
             message: 'Failed to initiate booking',
-            error: error instanceof Error ? error.message : msg
-        }
+            data: error instanceof Error ? error.message : msg
+        } as Outcome
     }
 }

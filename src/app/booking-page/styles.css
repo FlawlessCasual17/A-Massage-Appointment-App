@@ -1,14 +1,25 @@
+/* Final Page styles. */
+.final {
+    max-width: 28rem /* 448px */;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 2.5rem /* 40px */;
+    padding: 1.5rem /* 24px */;
+    @apply shadow-lg ring-2 ring-neutral
+}
+
 .submit {
     width: 100%;
     border-width: 2px;
-    @apply bg-emerald-700 border-emerald-600 text-[#e0e0e0]
+    @apply bg-emerald-700 border-emerald-600 text-foreground
 }
 
 .submit:hover {
     @apply bg-emerald-600 border-emerald-500
 }
 
-.m-type {
+/* First Page styles. */
+.type {
     cursor: pointer;
     @apply hover:shadow-lg transition-shadow
 }
@@ -17,4 +28,10 @@
     border-width: 2px;
     border-radius: 12px;
     @apply border-neutral
+}
+
+.option {
+    width: 100%;
+    padding: 0.5rem;
+    border-width: 1px
 }
