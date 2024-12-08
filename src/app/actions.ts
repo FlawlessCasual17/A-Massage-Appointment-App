@@ -2,4 +2,4 @@
 'use server'
 import { sql } from '@/utils/variables'
 
-export const getData = async () => (await sql`...`)
+export const getData = async () => await sql`...`

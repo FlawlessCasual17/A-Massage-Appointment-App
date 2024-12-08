@@ -1,5 +1,5 @@
 'use server'
-import { Patients } from '@/utils/types'
+import { Appointments, Patients } from '@/utils/types'
 import { sql } from '@/utils/variables'
 
 type Outcome = {
@@ -8,7 +8,7 @@ type Outcome = {
     data?: string | any
 }
 
-export async function bookingHandler(patient: Patients) {
+export async function patientDataHandler(patient: Patients) {
     try {
         const result = await sql`
             INSERT INTO "public"."patients" (
@@ -17,23 +17,54 @@ export async function bookingHandler(patient: Patients) {
                 "gender",
                 "email",
                 "phone_number",
-                "therapist_id",
-                "appointment_id"
+                "therapist_id"
             ) VALUES (
                 ${patient.first_name},
                 ${patient.last_name},
                 ${patient.gender},
                 ${patient.email},
                 ${patient.phone_number},
-                ${patient.therapist_id},
-                ${patient.appointment_id}
+                "${patient.therapist_id}"::uuid
+            ) RETURNING *`
+
+        return {
+            success: true,
+            message: 'Patient registered successfully',
+            data: result[0]
+        } satisfies Outcome
+    } catch (error) {
+        const msg = 'Unknown error, please try again later'
+
+        return {
+            success: false,
+            message: 'Failed to register patient',
+            data: error instanceof Error ? error.message : msg
+        } satisfies Outcome
+    }
+}
+
+export async function appointmentDataHandler(appointment: Appointments) {
+    try {
+        const result = await sql`
+            INSERT INTO "public"."appointments" (
+                "type_of_massage",
+                "scheduled_date",
+                "notes",
+                "therapist_id",
+                "patient_id"
+            ) VALUES (
+                ${appointment.type_of_massage},
+                "${appointment.scheduled_date}"::timestamptz,
+                ${appointment.notes},
+                "${appointment.therapist_id}"::uuid,
+                ${appointment.patient_id}
             ) RETURNING *`
 
         return {
             success: true,
             message: 'Booking initiated successfully',
             data: result[0]
-        } as Outcome
+        } satisfies Outcome
     } catch (error) {
         const msg = 'Unknown error, please try again later'
 
@@ -41,6 +72,6 @@ export async function bookingHandler(patient: Patients) {
             success: false,
             message: 'Failed to initiate booking',
             data: error instanceof Error ? error.message : msg
-        } as Outcome
+        } satisfies Outcome
     }
 }

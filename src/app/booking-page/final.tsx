@@ -2,7 +2,7 @@
 import { FormEvent, useEffect, useState } from 'react'
 import { Button, Input, Select } from 'react-daisyui'
 import { Appointments, Genders, Patients } from '@/utils/types'
-import { bookingHandler } from '../actions/bookingHandler'
+import { patientDataHandler, appointmentDataHandler } from '../actions/bookingHandler'
 import './styles.css'
 
 type SelectedData = {
@@ -11,6 +11,8 @@ type SelectedData = {
 }
 
 export default function Final({ selectedMassage, selectedTherapist }: SelectedData) {
+    const [appointmentId, setAppointmentId] = useState(0)
+
     const patientElements: Patients = {
         // The default value can be updated based on selection
         id: 0,
@@ -19,29 +21,31 @@ export default function Final({ selectedMassage, selectedTherapist }: SelectedDa
         email: '',
         gender: 0,
         phone_number: '',
-        therapist_id: '',
-        appointment_id: 0
+        therapist_id: selectedTherapist as string
     }
 
+    const [patientData, setPatientData] = useState<Patients>({ ...patientElements })
+
     const appointmentElements: Appointments = {
+        // The default value can be updated based on selection
         id: 0,
-        type_of_massage: 0,
+        type_of_massage: selectedMassage as number,
         scheduled_date: '',
         notes: '',
-        therapist_id: '',
+        therapist_id: selectedTherapist as string,
         patient_id: 0
     }
 
     const [genders, setGenders] = useState<Genders[]>([])
-    const [patientData, setPatientData] = useState<Patients>({ ...patientElements })
     const [appointmentData, setAppointmentData] = useState<Appointments>({ ...appointmentElements })
 
     async function handleSubmit(event: FormEvent) {
         event.preventDefault()
-        const result = await bookingHandler(patientData)
+        const result = await patientDataHandler(patientData)
         if (result.success) {
             // Handle success (e.g., show a success message, redirect)
             console.log(result)
+            setAppointmentId(appointmentData.id)
         } else {
             // Handle error (e.g., show error message)
             console.error(`An error occurred: ${result}`)
@@ -53,9 +57,7 @@ export default function Final({ selectedMassage, selectedTherapist }: SelectedDa
             try {
                 const gendersResponse = await fetch('/api/genders')
                 setGenders(await gendersResponse.json())
-            } catch (error) {
-                console.error(`Fetching error: ${error}`)
-            }
+            } catch (error) { console.error(`Fetching error: ${error}`) }
         })()
     }, [])
 
