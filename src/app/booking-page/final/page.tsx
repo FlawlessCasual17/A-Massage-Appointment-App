@@ -101,10 +101,10 @@ export default function Page() {
                     />
                 </div>
                 <div>
-                    <label className="block mb-2">Choose your Gender</label>
+                    <label className='block mb-2'>Choose your Gender</label>
                     <Select
                         value={ patientData.gender || 0 }
-                        className="option rounded-xl"
+                        className='option rounded-xl'
                         onChange={e => setPatientData({ ...patientData, gender: Number(e.target.value) })}
                     >
                         {genders.map(gender =>
