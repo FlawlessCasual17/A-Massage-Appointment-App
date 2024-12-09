@@ -1,14 +1,8 @@
+import '@fontsource-variable/inter'
 import type { Metadata } from 'next'
-import localFont from 'next/font/local'
 import './globals.css'
 import { ReactNode } from 'react'
 import { ThemeProvider } from '@/app/components/themeProvider'
-
-const interRegular = localFont({
-    src: './fonts/InterVariable.woff2',
-    variable: '--font-inter-regular',
-    weight: '100 900'
-})
 
 export const metadata: Metadata = {
     title: 'A Massage Appointment App',
@@ -20,7 +14,7 @@ type ReadonlyReactNode = Readonly<{ children: ReactNode }>
 export default function RootLayout({ children }: ReadonlyReactNode) {
     return (
         <html lang='en' suppressHydrationWarning>
-            <body className={`${interRegular.variable} antialiased`}>
+            <body className='antialiased'>
                 <ThemeProvider>
                     {children}
                 </ThemeProvider>
