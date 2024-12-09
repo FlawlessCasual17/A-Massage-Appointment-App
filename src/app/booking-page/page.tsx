@@ -8,6 +8,7 @@ import { useRouter } from 'next/navigation'
 import SelectedOptions from '@/app/actions/selectedOptions'
 
 export default function Page() {
+
     const [massageTypes, setMassageTypes] = useState<MassageType[]>([])
     const [therapists, setTherapists] = useState<Therapists[]>([])
     const [selectedMassage, setSelectedMassage] = useState<MassageId>(null)
@@ -19,10 +20,10 @@ export default function Page() {
         price: prices[i]
     }))
 
+    const router = useRouter()
     // Function to toggle layout
     function switchLayout() {
         const selectedOptions = new SelectedOptions()
-        const router = useRouter()
         selectedOptions.set(selectedMassage, selectedTherapist)
         router.push('./final')
     }
