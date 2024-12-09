@@ -69,6 +69,21 @@ export default function Page() {
     }
 
     useEffect(() => {
+        if (typeof selectedMassage !== 'number') {
+            console.error('selectedMassage is not a number');
+            // Handle the error, maybe set a default value or show an error message
+        }
+
+        if (typeof selectedTherapist !== 'string') {
+            console.error('selectedTherapist is not a string');
+            // Handle the error, maybe set a default value or show an error message
+        }
+
+        if (typeof durationAndPrice !== 'object' || durationAndPrice === null) {
+            console.error('durationAndPrice is not an object');
+            // Handle the error, maybe set default values or show an error message
+        }
+
         (async function() {
             try {
                 const gendersResponse = await fetch('/api/genders')
@@ -103,9 +118,9 @@ export default function Page() {
                     />
                 </div>
                 <div>
-                    <label className='block mb-2'>Choose your Gender</label>
+                    <label className='block mb-2'>Gender</label>
                     <Select
-                        value={ patientData.gender || 0 }
+                        value={patientData.gender || 0}
                         className='option rounded-xl'
                         onChange={e => setPatientData({ ...patientData, gender: Number(e.target.value) })}
                     >

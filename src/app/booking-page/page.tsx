@@ -40,6 +40,7 @@ export default function Page() {
     function switchLayout() {
         const selectedOptions = new SelectedOptions()
         selectedOptions.set(durationAndPrice, selectedMassage, selectedTherapist)
+        console.log('The following were sent to the final booking page: ', durationAndPrice, selectedMassage, selectedTherapist)
         router.push('/booking-page/final')
     }
 

@@ -1,10 +1,20 @@
+'use client'
+
+import { useTheme } from './themeProvider'
+
 export default function ThemeToggle() {
+    const { theme, setTheme } = useTheme()
+
+    const toggleTheme = () =>
+        setTheme(theme === 'light' ? 'dark' : 'light')
+
     return (
         <div className='absolute top-[36.21px] left-[1411px] flex flex-row items-center justify-center gap-spacing-space-space-x-2'>
             <label className='grid cursor-pointer place-items-center'>
                 <input
                     type='checkbox'
-                    value='light'
+                    checked={theme === 'dark'}
+                    onChange={toggleTheme}
                     className='toggle theme-controller bg-base-content col-span-2 col-start-1 row-start-1'
                 />
                 <svg

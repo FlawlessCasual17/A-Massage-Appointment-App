@@ -15,3 +15,16 @@
     @apply bg-violet-700 border-violet-800
         hover:bg-violet-500 hover:border-violet-600
 }
+
+.underlineStyling {
+    position: absolute;
+    top: 1.672rem /* 26.752px */;
+    left: -0.016rem /* -0.256px */;
+    /*noinspection CssNonIntegerLengthInPixels*/
+    border-top-width: 2.5px;
+    border-style: solid;
+    box-sizing: border-box;
+    width: 3.781rem /* 60.496px */;
+    height: 0.156rem /* 2.496px */;
+    @apply border-violet-500
+}

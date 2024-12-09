@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import localFont from 'next/font/local'
 import './globals.css'
 import { ReactNode } from 'react'
+import { ThemeProvider } from '@/app/components/themeProvider'
 
 const interRegular = localFont({
     src: './fonts/InterVariable.woff2',
@@ -18,9 +19,11 @@ type ReadonlyReactNode = Readonly<{ children: ReactNode }>
 
 export default function RootLayout({ children }: ReadonlyReactNode) {
     return (
-        <html lang='en'>
+        <html lang='en' suppressHydrationWarning>
             <body className={`${interRegular.variable} antialiased`}>
-                {children}
+                <ThemeProvider>
+                    {children}
+                </ThemeProvider>
             </body>
         </html>
     )
