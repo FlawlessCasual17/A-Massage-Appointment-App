@@ -1,14 +1,14 @@
 'use server'
-import { Appointments, Patients } from '@/utils/types'
+import { Appointments, Patients } from '@/utils/databaseTypes'
 import { sql } from '@/utils/variables'
 
 type Outcome = {
     success: boolean
     message: string
-    data?: string | any
+    data?: Record<string, any> | any
 }
 
-export async function patientDataHandler(patient: Patients) {
+export async function registerPatient(patient: Patients) {
     try {
         const result = await sql`
             INSERT INTO "public"."patients" (
@@ -43,7 +43,7 @@ export async function patientDataHandler(patient: Patients) {
     }
 }
 
-export async function appointmentDataHandler(appointment: Appointments) {
+export async function registerAppointment(appointment: Appointments) {
     try {
         const result = await sql`
             INSERT INTO "public"."appointments" (

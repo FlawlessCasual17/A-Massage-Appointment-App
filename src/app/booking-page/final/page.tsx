@@ -1,17 +1,17 @@
 'use client'
 import { FormEvent, useEffect, useState } from 'react'
 import { Button, Input, Select } from 'react-daisyui'
-import { Appointments, Genders, Patients } from '@/utils/types'
-import { patientDataHandler, appointmentDataHandler } from '../actions/bookingHandler'
-import './styles.css'
+import { Appointments, Genders, Patients } from '@/utils/databaseTypes'
+import { registerPatient, registerAppointment } from '@/app/actions/bookingHelper'
+import SelectedOptions from '@/app/actions/selectedOptions'
+import '../styles.css'
 
-type SelectedData = {
-    selectedMassage: number | null
-    selectedTherapist: string | null
-}
+export default function Page() {
+    const options = new SelectedOptions()
+    const selectedMassage = options.selectedMassage
+    const selectedTherapist = options.selectedTherapist
 
-export default function Final({ selectedMassage, selectedTherapist }: SelectedData) {
-    const [appointmentId, setAppointmentId] = useState(0)
+    const [genders, setGenders] = useState<Genders[]>([])
 
     const patientElements: Patients = {
         // The default value can be updated based on selection
@@ -23,8 +23,9 @@ export default function Final({ selectedMassage, selectedTherapist }: SelectedDa
         phone_number: '',
         therapist_id: selectedTherapist as string
     }
-
     const [patientData, setPatientData] = useState<Patients>({ ...patientElements })
+
+    const [patientId, setPatientId] = useState(0)
 
     const appointmentElements: Appointments = {
         // The default value can be updated based on selection
@@ -33,23 +34,36 @@ export default function Final({ selectedMassage, selectedTherapist }: SelectedDa
         scheduled_date: '',
         notes: '',
         therapist_id: selectedTherapist as string,
-        patient_id: 0
+        patient_id: patientId
     }
-
-    const [genders, setGenders] = useState<Genders[]>([])
     const [appointmentData, setAppointmentData] = useState<Appointments>({ ...appointmentElements })
+
+    const [registerSuccess, setRegisterSuccess] = useState({
+        patientResultSuccess: false,
+        appointmentResultSuccess: false
+    })
 
     async function handleSubmit(event: FormEvent) {
         event.preventDefault()
-        const result = await patientDataHandler(patientData)
-        if (result.success) {
-            // Handle success (e.g., show a success message, redirect)
-            console.log(result)
-            setAppointmentId(appointmentData.id)
-        } else {
-            // Handle error (e.g., show error message)
-            console.error(`An error occurred: ${result}`)
+
+        const patientResult = await registerPatient(patientData)
+        const patientResultSuccess = patientResult.success
+        if (patientResultSuccess) {
+            console.error(`An error occurred: ${patientResult}`)
+            return
         }
+
+        const appointmentResult = await registerAppointment(appointmentData)
+        const appointmentResultSuccess = appointmentResult.success
+        if (appointmentResultSuccess) {
+            console.error(`An error occurred: ${appointmentResult}`)
+            return
+        }
+
+        console.log(patientResult), setPatientId(patientData.id)
+
+        console.log(appointmentResult)
+        setRegisterSuccess({ patientResultSuccess, appointmentResultSuccess })
     }
 
     useEffect(() => {
@@ -62,9 +76,12 @@ export default function Final({ selectedMassage, selectedTherapist }: SelectedDa
     }, [])
 
     return (
-        <div className='final rounded-lg transition-all'>
-            <h1 className='text-2xl font-bold mb-6'>Finish booking your massage session!</h1>
-            <form onSubmit={handleSubmit} className='space-y-4'>
+        <div className='container mx-auto p-6'>
+            {/* Left Side */}
+            <h1 className='text-3xl font-bold mb-8 text-center'>
+                Finish booking your massage session!
+            </h1>
+            <form onSubmit={handleSubmit} className='final space-y-4'>
                 <div>
                     <label className='block mb-2'>First Name</label>
                     <Input
@@ -119,6 +136,7 @@ export default function Final({ selectedMassage, selectedTherapist }: SelectedDa
                     Book Appointment
                 </Button>
             </form>
+
         </div>
     )
 }

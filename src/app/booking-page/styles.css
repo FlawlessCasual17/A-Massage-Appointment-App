@@ -1,4 +1,4 @@
-/* Final Page styles. */
+/* Page Page styles. */
 .final {
     max-width: 28rem /* 448px */;
     margin-left: auto;
@@ -24,11 +24,18 @@
     @apply hover:shadow-lg transition-shadow
 }
 
-.choice {
+.chosen {
+    border-width: 2px;
+    border-radius: 12px;
+    @apply border-foreground
+}
+
+.not-chosen {
     border-width: 2px;
     border-radius: 12px;
     @apply border-neutral
 }
+
 
 .option {
     width: 100%;
