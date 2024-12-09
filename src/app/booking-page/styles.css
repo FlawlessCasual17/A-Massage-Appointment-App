@@ -21,7 +21,7 @@
 /* First Page styles. */
 .type {
     cursor: pointer;
-    @apply hover:shadow-lg transition-shadow
+    @apply hover:shadow-lg transition-colors
 }
 
 .chosen {

@@ -10,6 +10,7 @@ export default function Page() {
     const options = new SelectedOptions()
     const selectedMassage = options.selectedMassage
     const selectedTherapist = options.selectedTherapist
+    const durationAndPrice = options.durationAndPrice
 
     const [genders, setGenders] = useState<Genders[]>([])
 
@@ -34,7 +35,8 @@ export default function Page() {
         scheduled_date: '',
         notes: '',
         therapist_id: selectedTherapist as string,
-        patient_id: patientId
+        patient_id: patientId,
+        ...durationAndPrice
     }
     const [appointmentData, setAppointmentData] = useState<Appointments>({ ...appointmentElements })
 
@@ -136,7 +138,6 @@ export default function Page() {
                     Book Appointment
                 </Button>
             </form>
-
         </div>
     )
 }

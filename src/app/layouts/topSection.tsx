@@ -2,7 +2,6 @@
 import Image from 'next/image'
 import iconWithText from '../../assets/iconWithText.dark.svg'
 import ThemeToggle from '../components/utilities/themeToggle'
-// import Button from './utilities/button'
 import { Button } from 'react-daisyui'
 import { useRouter } from 'next/navigation'
 import sty from './topSection.module.css'

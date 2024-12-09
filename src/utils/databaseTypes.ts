@@ -12,6 +12,10 @@ export interface Appointments {
     therapist_id: string // UUID
     /** The id of the patient about to enjoy their massage appointment. */
     patient_id: number // Foreign key referencing the "patients" table
+    /** The price of the massage appointment. */
+    price: number
+    /** The duration of the massage appointment. */
+    duration: number
 }
 
 /** A table for data related to genders. */
