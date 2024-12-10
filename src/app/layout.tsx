@@ -5,7 +5,7 @@ import { ReactNode } from 'react'
 import { ThemeProvider } from '@/app/components/themeProvider'
 
 export const metadata: Metadata = {
-    title: 'A Massage Appointment App',
+    title: 'LOTUS Massage Therapy',
     description: 'Book your massage appointment today!'
 }
 

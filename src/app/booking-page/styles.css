@@ -1,4 +1,4 @@
-/* Page Page styles. */
+/* Final Page styles. */
 .final {
     max-width: 28rem /* 448px */;
     margin-left: auto;
@@ -11,7 +11,7 @@
 .submit {
     width: 100%;
     border-width: 2px;
-    @apply bg-emerald-700 border-emerald-600 text-foreground
+    @apply bg-emerald-700 border-emerald-600 text-white
 }
 
 .submit:hover {
@@ -21,24 +21,25 @@
 /* First Page styles. */
 .type {
     cursor: pointer;
-    @apply hover:shadow-lg transition-colors
+    @apply shadow-xl transition-colors
 }
 
 .chosen {
     border-width: 2px;
     border-radius: 12px;
-    @apply border-foreground
+    @apply border-blue-400
 }
 
 .not-chosen {
     border-width: 2px;
     border-radius: 12px;
-    @apply border-neutral
+    @apply hover:ring-2 hover:ring-blue-500
 }
 
 
 .option {
     width: 100%;
     padding: 0.5rem;
-    border-width: 1px
+    border-width: 1px;
+    @apply border-neutral
 }

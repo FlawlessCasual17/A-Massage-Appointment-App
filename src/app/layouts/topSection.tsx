@@ -3,7 +3,6 @@ import Image from 'next/image'
 import darkIconWithText from '@/assets/iconWithText.dark.svg'
 import lightIconWithText from '@/assets/iconWithText.light.svg'
 import ThemeToggle from '@/app/components/themeToggle'
-import { Button } from 'react-daisyui'
 import { useRouter } from 'next/navigation'
 import sty from './topSection.module.css'
 import { useTheme } from '@/app/components/themeProvider'
@@ -27,10 +26,12 @@ export default function TopSection() {
                 <b className='absolute top-0 left-[18rem] m-0'>Therapists</b>
                 <div className={sty.underlineStyling} />
             </div>
-            <Button onClick={handleClick} className={`btn ${sty.button}`}>
+            <button onClick={handleClick} className={`btn ${sty.button}`}>
                 book now
-            </Button>
-            <ThemeToggle />
+            </button>
+            <div className={sty.themeToggle}>
+                <ThemeToggle />
+            </div>
         </div>
     )
 }
