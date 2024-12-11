@@ -1,9 +1,74 @@
-datasource db {
-    provider = "postgresql"
-    url      = env("DATABASE_URL")
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["driverAdapters"]
 }
 
-generator client {
-    provider        = "prisma-client-js"
-    previewFeatures = ["driverAdapters"]
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model appointments {
+  id                Int           @default(autoincrement())
+  type_of_massage   Int
+  registration_date DateTime      @default(dbgenerated("CURRENT_TIMESTAMP(2)")) @db.Timestamptz(6)
+  scheduled_date    DateTime      @unique(map: "unique_scheduled_date") @db.Timestamptz(6)
+  notes             String?       @db.VarChar(255)
+  therapist_id      String        @db.Uuid
+  patient_id        Int
+  price             Decimal       @default(100.00) @db.Decimal(10, 2)
+  duration          Int           @default(60)
+  patients          patients      @relation(fields: [patient_id], references: [id], onDelete: Cascade, map: "fk_patient_id")
+  therapists        therapists    @relation(fields: [therapist_id], references: [uuid], onDelete: Cascade, map: "fk_therapist_id")
+  massage_types     massage_types @relation(fields: [type_of_massage], references: [id], onDelete: Cascade, map: "fk_type_of_massage")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model genders {
+  id         Int          @id(map: "pk_gender_id")
+  type       String       @default("Would prefer not to specify")
+  patients   patients[]
+  therapists therapists[]
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model massage_types {
+  id           Int            @id(map: "pk_massage_types_id")
+  name         String
+  appointments appointments[]
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model patients {
+  id           Int            @id(map: "pk_patient_id") @default(autoincrement())
+  first_name   String
+  last_name    String
+  gender       Int
+  email        String
+  phone_number String
+  therapist_id String         @db.Uuid
+  appointments appointments[]
+  genders      genders        @relation(fields: [gender], references: [id], onDelete: Cascade, map: "fk_gender_id")
+  therapists   therapists     @relation(fields: [therapist_id], references: [uuid], onDelete: Cascade, map: "fk_therapist_id")
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model therapists {
+  id             Int            @unique(map: "unique_id") @default(autoincrement())
+  uuid           String         @id(map: "pk_therapist_id") @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  first_name     String
+  last_name      String
+  gender         Int
+  email          String
+  phone_number   String
+  qualifications String         @db.VarChar(255)
+  specialties    String         @db.VarChar(255)
+  availability   Boolean?
+  appointments   appointments[]
+  patients       patients[]
+  genders        genders        @relation(fields: [gender], references: [id], onDelete: Cascade, map: "fk_gender_id")
 }

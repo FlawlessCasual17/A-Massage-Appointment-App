@@ -14,7 +14,7 @@
 *.wafpickle -*
 lock - wscript
 env.local
-*.env.local
+.env
 .venv
 npm - debug.log
 config.gypi
