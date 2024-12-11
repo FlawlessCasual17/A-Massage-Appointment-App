@@ -1,7 +1,7 @@
 /** A table for storing appointments. */
 export interface Appointments {
     /** The id of the massage appointment. */
-    id: number
+    // id: number
     /** The type of massage the patient is booked for. */
     type_of_massage: number // Foreign key referencing massage_types table
     /** The scheduled date of the appointment. */
@@ -37,7 +37,7 @@ export interface MassageType {
 /** A table for storing data related to patients. */
 export interface Patients {
     /** The patient's id. */
-    id: number
+    // id: number
     /** The patient's first name. */
     first_name: string
     /** The patient's last name. */

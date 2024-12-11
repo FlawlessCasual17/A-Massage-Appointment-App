@@ -1,8 +1,6 @@
-import { neon } from '@neondatabase/serverless'
-
 import { sql } from '@/utils/variables'
 
 export async function GET() {
-    const therapists = await sql`SELECT * FROM genders`
+    const therapists = await sql`SELECT * FROM public.genders`
     return Response.json(therapists)
 }

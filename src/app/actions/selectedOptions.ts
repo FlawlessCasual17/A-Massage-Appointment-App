@@ -1,9 +1,4 @@
-import { MassageId, TherapistUuid } from '@/utils/otherTypes'
-
-type DurationAndPrice = {
-    duration: number
-    price: number
-}
+import { DurationAndPriceType, MassageId, TherapistUuid } from '@/utils/otherTypes'
 
 /**
  * A basic class representing choices of
@@ -11,14 +6,14 @@ type DurationAndPrice = {
  * appointment duration and price.
  */
 export default class SelectedOptions {
-    durationAndPrice: DurationAndPrice = {
+    durationAndPrice: DurationAndPriceType = {
         duration: 0,
         price: 0
     }
     selectedMassage: MassageId = 0
     selectedTherapist: TherapistUuid = ''
 
-    set(durationAndPrice: DurationAndPrice, selectedMassage: MassageId, selectedTherapist: TherapistUuid) {
+    set(durationAndPrice: DurationAndPriceType, selectedMassage: MassageId, selectedTherapist: TherapistUuid) {
         this.durationAndPrice = durationAndPrice
         this.selectedMassage = selectedMassage
         this.selectedTherapist = selectedTherapist

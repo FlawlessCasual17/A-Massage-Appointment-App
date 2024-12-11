@@ -1,11 +1,20 @@
 /* Final Page styles. */
 .final {
+    position: relative;
     max-width: 28rem /* 448px */;
     margin-left: auto;
     margin-right: auto;
     margin-top: 2.5rem /* 40px */;
     padding: 1.5rem /* 24px */;
-    @apply shadow-lg ring-2 ring-neutral
+    bottom: 3.5rem /* 48px */;
+    @apply shadow-lg ring-2 ring-slate-400 dark:ring-neutral dark:bg-slate-950
+}
+
+.input-styled {
+    width: 100%;
+    padding: 0.5rem;
+    border-width: 2px;
+    @apply focus:border-4 border-slate-400 focus:border-blue-400
 }
 
 .submit {
@@ -21,25 +30,47 @@
 /* First Page styles. */
 .type {
     cursor: pointer;
-    @apply shadow-xl transition-colors
+    @apply shadow-slate-500 shadow-md border-slate-400
+        border-2 transition-all h-[16%] w-3/5
+}
+
+.type:hover {
+    border-width: 2px;
+    border-radius: 0.75rem /* 12px */;
+    @apply dark:shadow-white shadow-black bg-slate-100 dark:bg-neutral grow-[0.5]
+}
+
+.therapist {
+    cursor: pointer;
+    @apply shadow-slate-500 shadow-md border-slate-400
+        border-2 transition-all h-[34.5%] w-3/4
+}
+
+.therapist:hover {
+    border-width: 2px;
+    border-radius: 0.75rem /* 12px */;
+    @apply dark:shadow-white shadow-black bg-slate-100 dark:bg-neutral grow-[0.1]
 }
 
 .chosen {
-    border-width: 2px;
-    border-radius: 12px;
-    @apply border-blue-400
+    @apply hover:ring-2 hover:ring-blue-400 border-blue-400
 }
 
 .not-chosen {
-    border-width: 2px;
-    border-radius: 12px;
-    @apply hover:ring-2 hover:ring-blue-500
+    @apply hover:ring-2 hover:ring-blue-300
 }
 
+.continue {
+    width: 25%;
+    @apply bg-emerald-700 border-emerald-600 text-white
+}
+
+.continue:hover {
+    @apply bg-emerald-600 border-emerald-500
+}
 
 .option {
-    width: 100%;
-    padding: 0.5rem;
-    border-width: 1px;
-    @apply border-neutral
+    margin-top: 0.375rem /* 6px */;
+    max-width: 20rem /* 320px */;
+    @apply border-slate-400 border-2
 }

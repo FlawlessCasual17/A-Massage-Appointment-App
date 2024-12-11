@@ -11,21 +11,21 @@ type Outcome = {
 export async function registerPatient(patient: Patients) {
     try {
         const result = await sql`
-            INSERT INTO "public"."patients" (
-                "first_name",
-                "last_name",
-                "gender",
-                "email",
-                "phone_number",
-                "therapist_id"
+            INSERT INTO public.patients (
+                first_name,
+                last_name,
+                gender,
+                email,
+                phone_number,
+                therapist_id
             ) VALUES (
-                ${patient.first_name},
-                ${patient.last_name},
-                ${patient.gender},
-                ${patient.email},
-                ${patient.phone_number},
-                "${patient.therapist_id}"::uuid
-            ) RETURNING *`
+                '${patient.first_name}',
+                '${patient.last_name}',
+                '${patient.gender}',
+                '${patient.email}',
+                '${patient.phone_number}',
+                '${patient.therapist_id}'
+            ) RETURNING *;`
 
         return {
             success: true,
@@ -46,19 +46,25 @@ export async function registerPatient(patient: Patients) {
 export async function registerAppointment(appointment: Appointments) {
     try {
         const result = await sql`
-            INSERT INTO "public"."appointments" (
-                "type_of_massage",
-                "scheduled_date",
-                "notes",
-                "therapist_id",
-                "patient_id"
+            INSERT INTO public.appointments (
+                type_of_massage,
+                scheduled_date,
+                notes,
+                therapist_id,
+                patient_id,
+                price,
+                duration
             ) VALUES (
-                ${appointment.type_of_massage},
-                "${appointment.scheduled_date}"::timestamptz,
-                ${appointment.notes},
-                "${appointment.therapist_id}"::uuid,
-                ${appointment.patient_id}
-            ) RETURNING *`
+                '${appointment.type_of_massage}'::integer,
+                '${appointment.scheduled_date}',
+                '${appointment.notes}'::varchar(255),
+                '${appointment.therapist_id}'::uuid,
+                '${appointment.patient_id}'::integer,
+                '${appointment.price}'::numeric,
+                '${appointment.duration}'::integer
+            ) RETURNING *;`
+
+        console.log(result)
 
         return {
             success: true,

@@ -21,9 +21,9 @@ export default function TopSection() {
                 />
             </div>
             <div className='absolute top-[2.263rem] left-[34rem] w-[44.125rem] h-[2.125rem]'>
-                <b className='absolute top-0 left-[0.063rem]'>Home</b>
-                <b className='absolute top-0 left-[39.063rem]'>Contact</b>
-                <b className='absolute top-0 left-[18rem] m-0'>Therapists</b>
+                <span className='font-bold absolute top-0 left-[0.063rem]'>Home</span>
+                <span className='font-bold absolute top-0 left-[39.063rem]'>Contact</span>
+                <span className='font-bold absolute top-0 left-[18rem] m-0'>Therapists</span>
                 <div className={sty.underlineStyling} />
             </div>
             <button onClick={handleClick} className={`btn ${sty.button}`}>

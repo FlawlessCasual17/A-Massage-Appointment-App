@@ -1,11 +1,13 @@
 'use client'
 import { registerAppointment, registerPatient } from '@/app/actions/bookingHelper'
 import SelectedOptions from '@/app/actions/selectedOptions'
+import ThemeToggle from '@/app/components/themeToggle'
+import icon from '@/assets/icon.svg'
 import { Appointments, Genders, Patients } from '@/utils/databaseTypes'
-// import { useRouter } from 'next/navigation'
 import dayjs from 'dayjs'
+import Image from 'next/image'
 import { FormEvent, useEffect, useState } from 'react'
-import { Alert, Button, Input, Select } from 'react-daisyui'
+import { Button, Input, Select } from 'react-daisyui'
 import '../styles.css'
 
 export default function Page() {
@@ -18,7 +20,6 @@ export default function Page() {
 
     const patientElements: Patients = {
         // The default value can be updated based on selection
-        id: 0,
         first_name: '',
         last_name: '',
         email: '',
@@ -32,7 +33,6 @@ export default function Page() {
 
     const appointmentElements: Appointments = {
         // The default value can be updated based on selection
-        id: 0,
         type_of_massage: selectedMassage as number,
         scheduled_date: '',
         notes: '',
@@ -42,15 +42,15 @@ export default function Page() {
     }
     const [appointmentData, setAppointmentData] = useState<Appointments>({ ...appointmentElements })
 
-    const handleDate = (date?: dayjs.ConfigType) => dayjs(date).format('YYYY-MM-DD HH:mm:ss')
+    const handleDate = (date?: dayjs.ConfigType) =>
+        setAppointmentData({ ...appointmentData, scheduled_date: dayjs(date).format('YYYY-MM-DD HH:mm:ss') })
 
     const successAlertIcon = (
         <svg
             xmlns='http://www.w3.org/2000/svg'
             className='stroke-current shrink-0 h-6 w-6'
             fill='none'
-            viewBox='0 0 24 24'
-        >
+            viewBox='0 0 24 24'>
             <path
                 strokeLinecap='round'
                 strokeLinejoin='round'
@@ -77,17 +77,21 @@ export default function Page() {
             return
         }
 
-        const appointmentResult = await registerAppointment(appointmentData)
-        const appointmentResultSuccess = appointmentResult.success
-        if (appointmentResultSuccess) {
-            console.error(`An error occurred: ${appointmentResult}`)
-            return
-        }
+        // Get id of registered patient
+        const patientsResponse = await fetch('/api/patients')
+        const patients = await patientsResponse.json()
+        console.log(patientResult), setPatientId(patients['id'])
+        // console.log(patients as Patients)
 
-        console.log(patientResult), setPatientId(patientData.id)
-
-        console.log(appointmentResult)
-        setRegisterSuccess({ patientResultSuccess, appointmentResultSuccess })
+        // const appointmentResult = await registerAppointment(appointmentData)
+        // const appointmentResultSuccess = appointmentResult.success
+        // if (appointmentResultSuccess) {
+        //     console.error(`An error occurred: ${appointmentResult}`)
+        //     return
+        // }
+        //
+        // console.log(appointmentResult)
+        // setRegisterSuccess({ patientResultSuccess, appointmentResultSuccess })
     }
 
     useEffect(() => {
@@ -103,18 +107,26 @@ export default function Page() {
 
     // TODO: Finish styling everything in the page.
     return (
-        <div className='container mx-auto p-6'>
+        <div className='container mx-auto p-6 lg:max-w-[95%] md:max-w-3xl sm:max-w-3xl'>
+            <header className='flex flex-col-reverse'>
+                <h1 className='text-3xl font-bold mb-8 text-center'>Finish booking your massage session!</h1>
+                <div className='absolute top-1 left-4'>
+                    <Image alt='icon' src={icon} width={64} height={64} />
+                </div>
+                <div className='absolute top-4 right-4'>
+                    <ThemeToggle />
+                </div>
+            </header>
             {/* Left Side */}
-            <h1 className='text-3xl font-bold mb-8 text-center'>Finish booking your massage session!</h1>
-            <form onSubmit={handleSubmit} className='final space-y-4 rounded-xl'>
+            <form onSubmit={handleSubmit} className='final min-w-[35%] space-y-4 flex-wrap rounded-xl'>
                 <div>
                     <label className='block mb-2'>First Name</label>
                     <Input
                         type='text'
                         name='first_name'
+                        className='input-styled rounded-xl'
                         value={patientData.first_name || ''}
                         onChange={e => setPatientData({ ...patientData, first_name: e.target.value })}
-                        className='option rounded-xl'
                     />
                 </div>
                 <div>
@@ -122,9 +134,9 @@ export default function Page() {
                     <Input
                         type='text'
                         name='last_name'
+                        className='input-styled rounded-xl'
                         value={patientData.last_name || ''}
                         onChange={e => setPatientData({ ...patientData, last_name: e.target.value })}
-                        className='option rounded-xl'
                     />
                 </div>
                 <div>
@@ -132,8 +144,9 @@ export default function Page() {
                     <Select
                         name='gender'
                         value={patientData.gender || 0}
-                        className='option rounded-xl'
+                        className='input-styled rounded-xl'
                         onChange={e => setPatientData({ ...patientData, gender: Number(e.target.value) })}>
+                        <Select.Option disabled>Please choose a gender</Select.Option>
                         {genders.map(gender => (
                             <Select.Option key={gender.id} value={gender.id}>
                                 {gender.type}
@@ -146,9 +159,9 @@ export default function Page() {
                     <Input
                         type='email'
                         name='email'
+                        className='input-styled rounded-xl'
                         value={patientData.email || ''}
                         onChange={e => setPatientData({ ...patientData, email: e.target.value })}
-                        className='option rounded-xl'
                     />
                 </div>
                 <div>
@@ -156,9 +169,10 @@ export default function Page() {
                     <Input
                         type='tel'
                         name='phone_number'
+                        placeholder='Format: 000 000 0000'
+                        className='input-styled rounded-xl'
                         value={patientData.phone_number || ''}
                         onChange={e => setPatientData({ ...patientData, phone_number: e.target.value })}
-                        className='option rounded-xl'
                     />
                 </div>
                 <div>
@@ -166,14 +180,9 @@ export default function Page() {
                     <Input
                         type='datetime-local'
                         name='scheduled_date'
+                        className='input-styled rounded-xl /*m-w-[20rem]*/'
                         value={appointmentData.scheduled_date || ''}
-                        onChange={e =>
-                            setAppointmentData({
-                                ...appointmentData,
-                                scheduled_date: handleDate(e.target.value)
-                            })
-                        }
-                        className='option rounded-xl'
+                        onChange={e => handleDate(e.target.value)}
                     />
                 </div>
                 <div>
@@ -181,20 +190,23 @@ export default function Page() {
                     <Input
                         type='text'
                         name='notes'
+                        className='input-styled rounded-xl'
                         value={appointmentData.notes || ''}
                         onChange={e => setAppointmentData({ ...appointmentData, notes: e.target.value })}
-                        className='option rounded-xl'
                     />
                 </div>
-                <Button type='submit' className='submit'>
+                <Button color='success' type='submit' className='submit'>
                     Book Appointment
                 </Button>
             </form>
-            {isBookingSuccessful && (
-                <Alert status='success' icon={successAlertIcon}>
-                    <span>You have successfully booked your massage appointment!</span>
-                </Alert>
-            )}
+            {isBookingSuccessful &&
+                <div className='flex flex-col footer-center'>
+                    <div role='alert' className='alert alert-success w-[30%] bottom-1'>
+                        {successAlertIcon}
+                        <span className='text-white'>You have successfully booked your massage appointment!</span>
+                    </div>
+                </div>
+            }
         </div>
     )
 }
