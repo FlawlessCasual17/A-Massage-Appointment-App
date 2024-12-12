@@ -1,5 +1,5 @@
 // app/actions.ts
 'use server'
-import { sql } from '@/utils/variables'
+import prisma from '@/utils/prismaClient'
 
-export const getData = async () => await sql`...`
+export const getData = async () => await prisma.$queryRaw`...`

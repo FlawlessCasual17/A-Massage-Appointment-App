@@ -1,36 +1,31 @@
 'use server'
 import { Appointments, Patients } from '@/utils/databaseTypes'
-import { sql } from '@/utils/variables'
+import prisma from '@/utils/prismaClient'
+// import prisma from '@/utils/prismaClient'
 
 type Outcome = {
     success: boolean
     message: string
-    data?: Record<string, any> | any
+    data?: any
 }
 
 export async function registerPatient(patient: Patients) {
     try {
-        const result = await sql`
-            INSERT INTO public.patients (
-                first_name,
-                last_name,
-                gender,
-                email,
-                phone_number,
-                therapist_id
-            ) VALUES (
-                '${patient.first_name}',
-                '${patient.last_name}',
-                '${patient.gender}',
-                '${patient.email}',
-                '${patient.phone_number}',
-                '${patient.therapist_id}'
-            ) RETURNING *;`
+        const result = await prisma.patients.create({
+            data: {
+                first_name: patient.first_name,
+                last_name: patient.last_name,
+                gender: patient.gender,
+                email: patient.email,
+                phone_number: patient.phone_number,
+                therapist_id: patient.therapist_id
+            }
+        })
 
         return {
             success: true,
             message: 'Patient registered successfully',
-            data: result[0]
+            data: result
         } satisfies Outcome
     } catch (error) {
         const msg = 'Unknown error, please try again later'
@@ -45,31 +40,24 @@ export async function registerPatient(patient: Patients) {
 
 export async function registerAppointment(appointment: Appointments) {
     try {
-        const result = await sql`
-            INSERT INTO public.appointments (
-                type_of_massage,
-                scheduled_date,
-                notes,
-                therapist_id,
-                patient_id,
-                price,
-                duration
-            ) VALUES (
-                '${appointment.type_of_massage}'::integer,
-                '${appointment.scheduled_date}',
-                '${appointment.notes}'::varchar(255),
-                '${appointment.therapist_id}'::uuid,
-                '${appointment.patient_id}'::integer,
-                '${appointment.price}'::numeric,
-                '${appointment.duration}'::integer
-            ) RETURNING *;`
+        const result = await prisma.appointments.create({
+            data: {
+                type_of_massage: appointment.type_of_massage,
+                scheduled_date: <string>appointment.scheduled_date,
+                notes: appointment.notes,
+                therapist_id: appointment.therapist_id,
+                patient_id: appointment.patient_id,
+                price: appointment.price,
+                duration: appointment.duration
+            }
+        })
 
         console.log(result)
 
         return {
             success: true,
             message: 'Booking initiated successfully',
-            data: result[0]
+            data: result
         } satisfies Outcome
     } catch (error) {
         const msg = 'Unknown error, please try again later'

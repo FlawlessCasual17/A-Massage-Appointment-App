@@ -8,8 +8,8 @@ import sty from './topSection.module.css'
 import { useTheme } from '@/app/components/themeProvider'
 
 export default function TopSection() {
-    const router = useRouter()
     const { theme } = useTheme()
+    const router = useRouter()
     const handleClick = () => router.push('/booking-page')
 
     return (

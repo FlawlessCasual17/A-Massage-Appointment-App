@@ -1,5 +1,4 @@
 'use client'
-import SelectedOptions from '@/app/actions/selectedOptions'
 import ThemeToggle from '@/app/components/themeToggle'
 import icon from '@/assets/icon.svg'
 import { MassageType, Therapists } from '@/utils/databaseTypes'
@@ -11,11 +10,13 @@ import { Button, Card } from 'react-daisyui'
 import './styles.css'
 
 export default function Page() {
-    const router = useRouter()
+    const router = useRouter() // Used for page swapping.
 
+    // Holds the data from API requests to the database.
     const [massageTypes, setMassageTypes] = useState<MassageType[]>([])
     const [therapists, setTherapists] = useState<Therapists[]>([])
 
+    // Stores selected options by the user.
     const [selectedMassage, setSelectedMassage] = useState<MassageId>(null)
     const [selectedTherapist, setSelectedTherapist] = useState<TherapistUuid>(null)
     const [durationAndPrice, setDurationAndPrice] = useState<DurationAndPriceType>({
@@ -23,21 +24,16 @@ export default function Page() {
         price: 0
     })
 
+    // Helps the selected duration and price option.
     const durationsAndPrices = Array.from({ length: 3 }, (_, i) => ({
         duration: [60, 75, 90][i],
         price: [100, 125, 150][i]
     }))
-
     const options = durationsAndPrices.map(o => `${o.duration}-$${o.price}.00`)
 
-    const [matchValue, setMatchValue] = useState('')
-    // TODO: Add a function or variable that remembers
-    //  which option from the drop-down menu was selected.
-
-    // Handles the selected duration and price options from the user
+    // Handles the selected duration and price options from the user.
     function handleDurationAndPrice(targetValue: string) {
         const value = targetValue.split('-$')
-        setMatchValue(targetValue)
         const options = {
             duration: Number(value[0]),
             price: Number(value[1])
@@ -48,17 +44,9 @@ export default function Page() {
     // Used for the "Continue to Booking" button
     const isDisabled = selectedMassage === null || selectedTherapist === null
 
-    // Function to toggle layout
-    function switchLayout() {
-        const selectedOptions = new SelectedOptions()
-        selectedOptions.set(durationAndPrice, selectedMassage, selectedTherapist)
-        console.log('The following data was sent to the final booking page: ')
-        console.log(durationAndPrice, selectedMassage, selectedTherapist)
-        router.push('/booking-page/final')
-    }
-
+    // Makes API requests to the database.
     useEffect(() => {
-        (async function () {
+        (async function() {
             try {
                 const mResponse = await fetch('/api/massage_types')
                 const tResponse = await fetch('/api/therapists')
@@ -76,39 +64,41 @@ export default function Page() {
         durationAndPrice: JSON.stringify(durationAndPrice)
     }), [selectedMassage, selectedTherapist, durationAndPrice])
 
+    // Stores the data of the selected options
+    // from the first page into separate values.
+    // This helps the browser remember which
+    // options the user selected.
     useEffect(() => {
         if (typeof localStorage === 'undefined') return
 
-        if (memoValues.selectedMassage !== 'null') localStorage.setItem('selectedMassage', memoValues.selectedMassage)
+        if (memoValues.selectedMassage !== 'null')
+            localStorage.setItem('selectedMassage', memoValues.selectedMassage)
         if (memoValues.selectedTherapist !== 'null')
             localStorage.setItem('selectedTherapist', memoValues.selectedTherapist)
         if (memoValues.durationAndPrice !== '{"duration":0,"price":0}')
             localStorage.setItem('durationAndPrice', memoValues.durationAndPrice)
     }, [memoValues])
 
+    // If the first useEffect hook succeeded, then this one
+    // will get those values from the browser's localStorage
+    // and store them into their respective variables.
+    // This helps the browser remember which
+    // options the user selected.
     useEffect(() => {
         const massageId = localStorage.getItem('selectedMassage') as MassageId | null
         const therapistId = localStorage.getItem('selectedTherapist') as TherapistUuid | null
         const asString = localStorage.getItem('durationAndPrice') as string
-        const durationAndPrice = JSON.parse(asString) as DurationAndPriceType | null
+        const durationAndPrice = JSON.parse(asString) as DurationAndPriceType | '{"duration":0,"price":0}'
 
-        if (massageId !== null) setSelectedMassage(Number(massageId))
-        if (therapistId !== null) setSelectedTherapist(therapistId)
-        if (durationAndPrice !== null) setDurationAndPrice(durationAndPrice)
+        if (massageId !== null)
+            setSelectedMassage(Number(massageId))
+        if (therapistId !== null)
+            setSelectedTherapist(therapistId)
+        if (durationAndPrice !== '{"duration":0,"price":0}')
+            setDurationAndPrice(durationAndPrice)
+
+        console.log('Successfully retrieved selected options from localStorage!')
     }, [])
-
-    // useEffect(() => {
-    //     const savedTheme = localStorage.getItem('theme') as Theme | null
-    //     if (savedTheme) setTheme(savedTheme)
-    //     else if (window.matchMedia('(prefers-color-scheme: dark)').matches)
-    //         setTheme('dark')
-    // }, [])
-
-    // useEffect(() => {
-    //     localStorage.setItem('theme', theme)
-    //     document.documentElement.setAttribute('data-theme', theme)
-    //     document.documentElement.classList.toggle('dark', theme === 'dark')
-    // }, [theme])
 
     return (
         <div className='container mx-auto p-6 lg:max-w-[95%] md:max-w-3xl sm:max-w-3xl'>
@@ -133,26 +123,32 @@ export default function Page() {
             <div className='grid sm:grid-cols-1 md:grid-cols-2 gap-8'>
                 {/* Massage Types Section */}
                 <div className='space-y-4 flex flex-col items-center'>
-                    <h2 className='text-2xl font-semibold mb-4'>Select Massage Type</h2>
+                    <h2 className='text-2xl font-semibold mb-4'>
+                        Select Massage Type
+                    </h2>
                     {massageTypes.map(m => (
                         <Card
                             key={m.id}
-                            className={`btn type ${selectedMassage === m.id ? 'chosen' : 'not-chosen'}`}
-                            onClick={() => setSelectedMassage(m.id)}
-                        >
+                            className={`btn type
+                                ${selectedMassage === m.id ? 'chosen' : 'not-chosen'}`}
+                            onClick={() => setSelectedMassage(m.id)}>
                             <Card.Body className='flex items-center gap-4 flex-col p-5'>
                                 <Card.Title className='text-xl'>{m.name}</Card.Title>
+                                <label className='relative top-3 italic'>
+                                    Select a Duration and Price
+                                </label>
                                 <select name='Duration and Price' className='select option'>
-                                    <option disabled>Please select a duration and price</option>
-                                    {durationsAndPrices.map((o, idx) =>
+                                    <option className='italic' disabled>
+                                        Select a Duration and Price
+                                    </option>
+                                    {durationsAndPrices.map((o, idx) => (
                                         <option
                                             key={idx}
                                             onClick={() => handleDurationAndPrice(options[idx])}
-                                            value={options[idx]}
-                                        >
+                                            value={options[idx]}>
                                             {o.duration} minutes - ${o.price}.00
                                         </option>
-                                    )}
+                                    ))}
                                 </select>
                             </Card.Body>
                         </Card>
@@ -164,19 +160,19 @@ export default function Page() {
                     {therapists.map(t => (
                         <Card
                             key={t.uuid}
-                            className={`btn therapist ${selectedTherapist === t.uuid ? 'chosen' : 'not-chosen'}`}
+                            className={`btn therapist
+                                ${selectedTherapist === t.uuid ? 'chosen' : 'not-chosen'}`}
                             onClick={() => setSelectedTherapist(t.uuid)}>
                             <Card.Body className='flex items-center gap-4 flex-col p-10'>
                                 <Card.Title className='font-bold text-lg'>
                                     {t.first_name} {t.last_name}
                                 </Card.Title>
+                                {/*<p className='text-sm'>{t.uuid}</p>*/}
                                 <p className='text-sm'>{t.email}</p>
                                 <p className='text-sm'>{t.phone_number}</p>
                                 <p className='text-sm'>{t.qualifications}</p>
                                 <div className='flex gap-2 mt-2 flex-wrap-reverse'>
-                                    <span className='badge badge-info badge-outline p-8'>
-                                        {t.specialties}
-                                    </span>
+                                    <span className='badge badge-info badge-outline p-8'>{t.specialties}</span>
                                 </div>
                             </Card.Body>
                         </Card>
@@ -190,7 +186,7 @@ export default function Page() {
                     color='success'
                     className='border-2 disabled:border-slate-400 continue'
                     disabled={isDisabled}
-                    onClick={switchLayout}>
+                    onClick={() => router.push('/booking-page/final')}>
                     Continue to Booking...
                 </Button>
             </div>

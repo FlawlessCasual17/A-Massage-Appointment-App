@@ -1,6 +1,6 @@
-import { sql } from '@/utils/variables'
+import prisma from '@/utils/prismaClient'
 
 export async function GET() {
-    const massageTypes = await sql`SELECT * FROM massage_types`
+    const massageTypes = await prisma.$queryRaw`SELECT * FROM massage_types`
     return Response.json(massageTypes)
 }

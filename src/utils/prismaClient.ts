@@ -4,10 +4,10 @@ import { PrismaClient } from '@prisma/client'
 import dotenv from '@dotenvx/dotenvx'
 import ws from 'ws'
 
-dotenv.config()
+dotenv.config({ path: './.env' })
 neonConfig.webSocketConstructor = ws
 neonConfig.poolQueryViaFetch = true
-const connectionString = String(process.env.DATABASE_URL)
+const connectionString = <string>process.env.DATABASE_URL
 
 // Type definitions
 declare global {
@@ -16,7 +16,7 @@ declare global {
 }
 
 const pool = new Pool({ connectionString })
-const adapter = new PrismaNeon(pool, { schema: 'public' })
+const adapter = new PrismaNeon(pool)
 const prisma = new PrismaClient({ adapter })
 
 if (process.env.NODE_ENV === 'development') global.prisma = prisma

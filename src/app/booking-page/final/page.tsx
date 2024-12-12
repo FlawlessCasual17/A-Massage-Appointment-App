@@ -1,29 +1,31 @@
 'use client'
 import { registerAppointment, registerPatient } from '@/app/actions/bookingHelper'
-import SelectedOptions from '@/app/actions/selectedOptions'
 import ThemeToggle from '@/app/components/themeToggle'
 import icon from '@/assets/icon.svg'
-import { Appointments, Genders, Patients } from '@/utils/databaseTypes'
+import { Appointments, Genders, MassageType, Patients, Therapists } from '@/utils/databaseTypes'
+import { DurationAndPriceType, MassageId, TherapistUuid } from '@/utils/otherTypes'
 import dayjs from 'dayjs'
 import Image from 'next/image'
 import { FormEvent, useEffect, useState } from 'react'
-import { Button, Input, Select } from 'react-daisyui'
+import { Button, Card, Input, Select } from 'react-daisyui'
 import '../styles.css'
 
-interface BookingOptions {
-    durationAndPrice: DurationAndPriceType
-    selectedMassage: MassageId
-    selectedTherapist: TherapistUuid
-}
-
 export default function Page() {
-    const options = new SelectedOptions()
-    const selectedMassage = options.selectedMassage
-    const selectedTherapist = options.selectedTherapist
-    const durationAndPrice = options.durationAndPrice
+    // Stores selected options by the user.
+    const [selectedMassage, setSelectedMassage] = useState<MassageId>(null)
+    const [selectedTherapist, setSelectedTherapist] = useState<TherapistUuid>(null)
+    const [durationAndPrice, setDurationAndPrice] = useState<DurationAndPriceType>({
+        duration: 0,
+        price: 0
+    })
 
+    // Stores query results from an API request
     const [genders, setGenders] = useState<Genders[]>([])
+    const [therapists, setTherapists] = useState<Therapists[]>([])
+    const [massageTypes, setMassageTypes] = useState<MassageType[]>([])
 
+
+    // Contains properties associated with patients.
     const patientElements: Patients = {
         // The default value can be updated based on selection
         first_name: '',
@@ -33,10 +35,11 @@ export default function Page() {
         phone_number: '',
         therapist_id: selectedTherapist as string
     }
-    const [patientData, setPatientData] = useState<Patients>({ ...patientElements })
 
+    const [patientData, setPatientData] = useState<Patients>({ ...patientElements })
     const [patientId, setPatientId] = useState(0)
 
+    // Contains properties associated with appointments.
     const appointmentElements: Appointments = {
         // The default value can be updated based on selection
         type_of_massage: selectedMassage as number,
@@ -46,10 +49,21 @@ export default function Page() {
         patient_id: patientId,
         ...durationAndPrice
     }
+
+    // Holds appointment-related data for use in this component.
     const [appointmentData, setAppointmentData] = useState<Appointments>({ ...appointmentElements })
 
+    // Holds the therapist's name for use in the UI.
+    const [therapistName, setTherapistName] = useState('')
+    // Holds the massage type's name for use in the UI.
+    const [massageName, setMassageName] = useState('')
+
+    // Handles the date formatting process.
     const handleDate = (date?: dayjs.ConfigType) =>
-        setAppointmentData({ ...appointmentData, scheduled_date: dayjs(date).format('YYYY-MM-DD HH:mm:ss') })
+        setAppointmentData({
+            ...appointmentData,
+            scheduled_date: dayjs(date).format('YYYY-MM-DD HH:mm:ss')
+        })
 
     const successAlertIcon = (
         <svg
@@ -66,52 +80,102 @@ export default function Page() {
         </svg>
     )
 
-    const [registerSuccess, setRegisterSuccess] = useState({
+    // Holds boolean variables for a conditional JSX element.
+    const [success, setSuccess] = useState({
         patientResultSuccess: false,
         appointmentResultSuccess: false
     })
 
-    const isBookingSuccessful = registerSuccess.patientResultSuccess && registerSuccess.appointmentResultSuccess
+    // Used for a conditional JSX element.
+    const isBookingSuccessful = success.patientResultSuccess && success.appointmentResultSuccess
 
+    // Handles the final submit.
     async function handleSubmit(event: FormEvent) {
         event.preventDefault()
 
+        if (patientData.therapist_id === null) return
+
         const patientResult = await registerPatient(patientData)
         const patientResultSuccess = patientResult.success
-        if (patientResultSuccess) {
+        if (!patientResultSuccess) {
             console.error(`An error occurred: ${patientResult}`)
             return
         }
+
+        if (appointmentData.therapist_id === null) return
 
         // Get id of registered patient
         const patientsResponse = await fetch('/api/patients')
         const patients = await patientsResponse.json()
         console.log(patientResult), setPatientId(patients['id'])
-        // console.log(patients as Patients)
 
-        // const appointmentResult = await registerAppointment(appointmentData)
-        // const appointmentResultSuccess = appointmentResult.success
-        // if (appointmentResultSuccess) {
-        //     console.error(`An error occurred: ${appointmentResult}`)
-        //     return
-        // }
-        //
-        // console.log(appointmentResult)
-        // setRegisterSuccess({ patientResultSuccess, appointmentResultSuccess })
+        const appointmentResult = await registerAppointment(appointmentData)
+        const appointmentResultSuccess = appointmentResult.success
+        if (appointmentResultSuccess) {
+            console.error(`An error occurred: ${appointmentResult}`)
+            return
+        }
+
+        console.log(appointmentResult)
+        setSuccess({ patientResultSuccess, appointmentResultSuccess })
     }
 
+    // This helps the browser remember which
+    // options the user selected.
+    useEffect(() => {
+        const massageId = localStorage.getItem('selectedMassage') as MassageId | null
+        const therapistId = localStorage.getItem('selectedTherapist') as TherapistUuid | null
+        const asString = localStorage.getItem('durationAndPrice') as string
+        const durationAndPrice = JSON.parse(asString) as DurationAndPriceType | '{"duration":0,"price":0}'
+
+        if (massageId !== null)
+            setSelectedMassage(Number(massageId))
+        if (therapistId !== null)
+            setSelectedTherapist(therapistId)
+        if (durationAndPrice !== '{"duration":0,"price":0}')
+            setDurationAndPrice(durationAndPrice)
+
+        console.log('Successfully retrieved selected options from localStorage!')
+    }, [])
+
+    useEffect(() => {
+        if (selectedTherapist) {
+            setPatientData(prevData => ({ ...prevData, therapist_id: selectedTherapist }))
+            setAppointmentData(prevData => ({ ...prevData, therapist_id: selectedTherapist }))
+        }
+    }, [selectedTherapist])
+
+    useEffect(() => {
+        if (selectedMassage)
+            setAppointmentData(prevData => ({ ...prevData, type_of_massage: selectedMassage }))
+    }, [selectedMassage])
+
+    useEffect(() => {
+        therapists.forEach(therapist => {
+            if (therapist.uuid === selectedTherapist)
+                setTherapistName(`${therapist.first_name} ${therapist.last_name}`)
+        })
+
+        massageTypes.forEach(massageType => {
+            if (massageType.id === selectedMassage) setMassageName(massageType.name)
+        })
+    }, [massageTypes, selectedMassage, selectedTherapist, therapists])
+
+    // Used for fetching and storing the
+    // query result in the "genders" array.
     useEffect(() => {
         (async function () {
             try {
-                const gendersResponse = await fetch('/api/genders')
-                setGenders(await gendersResponse.json())
-            } catch (error) {
-                console.error(`Fetching error: ${error}`)
-            }
+                const gResponse = await fetch('/api/genders')
+                const tResponse = await fetch('/api/therapists')
+                const mResponse = await fetch('/api/massage_types')
+                setGenders(await gResponse.json())
+                setTherapists(await tResponse.json())
+                setMassageTypes(await mResponse.json())
+            } catch (error) { console.error(`Fetching error: ${error}`) }
         })()
     }, [])
 
-    // TODO: Finish styling everything in the page.
     return (
         <div className='container mx-auto p-6 lg:max-w-[95%] md:max-w-3xl sm:max-w-3xl'>
             <header className='flex flex-col-reverse'>
@@ -124,7 +188,7 @@ export default function Page() {
                 </div>
             </header>
             {/* Left Side */}
-            <form onSubmit={handleSubmit} className='final min-w-[35%] space-y-4 flex-wrap rounded-xl'>
+            <form onSubmit={handleSubmit} className='form-sty form-control space-y-4 rounded-xl right-80'>
                 <div>
                     <label className='block mb-2'>First Name</label>
                     <Input
@@ -152,7 +216,7 @@ export default function Page() {
                         value={patientData.gender || 0}
                         className='input-styled rounded-xl'
                         onChange={e => setPatientData({ ...patientData, gender: Number(e.target.value) })}>
-                        <Select.Option disabled>Please choose a gender</Select.Option>
+                        <Select.Option disabled>Choose your gender...</Select.Option>
                         {genders.map(gender => (
                             <Select.Option key={gender.id} value={gender.id}>
                                 {gender.type}
@@ -205,100 +269,39 @@ export default function Page() {
                     Book Appointment
                 </Button>
             </form>
-            {isBookingSuccessful &&
+            {/* Right side */}
+            <Card className='other-info form-control space-y-4 rounded-xl left-80 -top-[50rem]'>
+                <Card.Body className='text-center'>
+                    <Card.Title className='prose-h1:text-xl font-bold mb-4'>
+                        Selected Massage Therapist
+                    </Card.Title>
+                    <p className='prose-p:text-base'>{therapistName}</p>
+                </Card.Body>
+                <Card.Body className='text-center'>
+                    <Card.Title className='prose-h1:text-xl font-bold mb-4'>
+                        Selected Massage Type
+                    </Card.Title>
+                    <p className='prose-p:text-base'>{massageName}</p>
+                </Card.Body>
+                <Card.Body className='text-center'>
+                    <Card.Title className='prose-h1:text-xl font-bold mb-4'>
+                        Selected Duration and Price
+                    </Card.Title>
+                    <p className='prose-p:text-base'>
+                        {durationAndPrice.duration} minutes and ${durationAndPrice.price} CAD
+                    </p>
+                </Card.Body>
+            </Card>
+            {isBookingSuccessful && (
                 <div className='flex flex-col footer-center'>
-                    <div role='alert' className='alert alert-success w-[30%] bottom-1'>
+                    <div role='alert' className='alert alert-success w-[30%] bottom-1 rounded-xl'>
                         {successAlertIcon}
-                        <span className='text-white'>You have successfully booked your massage appointment!</span>
+                        <span className='text-white'>
+                            You have successfully booked your massage appointment!
+                        </span>
                     </div>
                 </div>
-            }
+            )}
         </div>
     )
-}
-
-export class BookingOptionsManager {
-    private options: BookingOptions
-
-    public constructor() {
-        this.options = {
-            durationAndPrice: { duration: 0, price: 0 },
-            selectedMassage: 0,
-            selectedTherapist: ''
-        }
-    }
-
-    // Getters
-    getDurationAndPrice(): DurationAndPriceType {
-        return { ...this.options.durationAndPrice }
-    }
-
-    getSelectedMassage(): MassageId {
-        return this.options.selectedMassage
-    }
-
-    getSelectedTherapist(): TherapistUuid {
-        return this.options.selectedTherapist
-    }
-
-    getAllOptions(): BookingOptions {
-        return { ...this.options }
-    }
-
-    // Setters with validation
-    setDurationAndPrice(durationAndPrice: DurationAndPriceType) {
-        if (durationAndPrice.duration <= 0) throw new Error('Invalid duration')
-
-        if (durationAndPrice.price <= 0) throw new Error('Invalid price')
-
-        this.options.durationAndPrice = { ...durationAndPrice }
-    }
-
-    setSelectedMassage(massageId: MassageId) {
-        if (massageId === null || massageId <= 0) throw new Error('Invalid massage selection')
-
-        if (typeof massageId !== 'number') throw new Error('Massage ID must be a number')
-
-        this.options.selectedMassage = massageId
-    }
-
-    setSelectedTherapist(therapistUuid: TherapistUuid) {
-        if (!therapistUuid || therapistUuid.trim() === '') throw new Error('Invalid therapist selection')
-
-        if (typeof therapistUuid !== 'string') throw new Error('Therapist UUID must be a string')
-
-        this.options.selectedTherapist = therapistUuid
-    }
-
-    // Set all options at once with validation
-    // setAllOptions(options: BookingOptions) {
-    //     if (options.durationAndPrice.duration <= 0)
-    //         throw new Error('Invalid duration')
-
-    //     if (options.durationAndPrice.price <= 0)
-    //         throw new Error('Invalid price')
-
-    //     if (options.selectedMassage === null || options.selectedMassage <= 0)
-    //         throw new Error('Invalid massage selection')
-
-    //     if (!options.selectedTherapist || options.selectedTherapist.trim() === '')
-    //         throw new Error('Invalid therapist selection')
-
-    //     if (typeof options.selectedTherapist !== 'string')
-    //         throw new Error('Therapist UUID must be a string')
-
-    //     if (typeof options.selectedMassage !== 'number')
-    //         throw new Error('Massage ID must be a number')
-
-    //     this.options = { ...options }
-    // }
-
-    // Reset to default values
-    reset() {
-        this.options = {
-            durationAndPrice: { duration: 0, price: 0 },
-            selectedMassage: 0,
-            selectedTherapist: ''
-        }
-    }
 }
