@@ -210,3 +210,89 @@ export default function Page() {
         </div>
     )
 }
+
+export class BookingOptionsManager {
+    private options: BookingOptions
+
+    public constructor() {
+        this.options = {
+            durationAndPrice: { duration: 0, price: 0 },
+            selectedMassage: 0,
+            selectedTherapist: ''
+        }
+    }
+
+    // Getters
+    getDurationAndPrice(): DurationAndPriceType {
+        return { ...this.options.durationAndPrice }
+    }
+
+    getSelectedMassage(): MassageId {
+        return this.options.selectedMassage
+    }
+
+    getSelectedTherapist(): TherapistUuid {
+        return this.options.selectedTherapist
+    }
+
+    getAllOptions(): BookingOptions {
+        return { ...this.options }
+    }
+
+    // Setters with validation
+    setDurationAndPrice(durationAndPrice: DurationAndPriceType) {
+        if (durationAndPrice.duration <= 0) throw new Error('Invalid duration')
+
+        if (durationAndPrice.price <= 0) throw new Error('Invalid price')
+
+        this.options.durationAndPrice = { ...durationAndPrice }
+    }
+
+    setSelectedMassage(massageId: MassageId) {
+        if (massageId === null || massageId <= 0) throw new Error('Invalid massage selection')
+
+        if (typeof massageId !== 'number') throw new Error('Massage ID must be a number')
+
+        this.options.selectedMassage = massageId
+    }
+
+    setSelectedTherapist(therapistUuid: TherapistUuid) {
+        if (!therapistUuid || therapistUuid.trim() === '') throw new Error('Invalid therapist selection')
+
+        if (typeof therapistUuid !== 'string') throw new Error('Therapist UUID must be a string')
+
+        this.options.selectedTherapist = therapistUuid
+    }
+
+    // Set all options at once with validation
+    // setAllOptions(options: BookingOptions) {
+    //     if (options.durationAndPrice.duration <= 0)
+    //         throw new Error('Invalid duration')
+
+    //     if (options.durationAndPrice.price <= 0)
+    //         throw new Error('Invalid price')
+
+    //     if (options.selectedMassage === null || options.selectedMassage <= 0)
+    //         throw new Error('Invalid massage selection')
+
+    //     if (!options.selectedTherapist || options.selectedTherapist.trim() === '')
+    //         throw new Error('Invalid therapist selection')
+
+    //     if (typeof options.selectedTherapist !== 'string')
+    //         throw new Error('Therapist UUID must be a string')
+
+    //     if (typeof options.selectedMassage !== 'number')
+    //         throw new Error('Massage ID must be a number')
+
+    //     this.options = { ...options }
+    // }
+
+    // Reset to default values
+    reset() {
+        this.options = {
+            durationAndPrice: { duration: 0, price: 0 },
+            selectedMassage: 0,
+            selectedTherapist: ''
+        }
+    }
+}
