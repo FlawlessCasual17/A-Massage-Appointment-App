@@ -10,6 +10,12 @@ import { FormEvent, useEffect, useState } from 'react'
 import { Button, Input, Select } from 'react-daisyui'
 import '../styles.css'
 
+interface BookingOptions {
+    durationAndPrice: DurationAndPriceType
+    selectedMassage: MassageId
+    selectedTherapist: TherapistUuid
+}
+
 export default function Page() {
     const options = new SelectedOptions()
     const selectedMassage = options.selectedMassage
