@@ -4,7 +4,7 @@ import { PrismaClient } from '@prisma/client'
 import dotenv from '@dotenvx/dotenvx'
 import ws from 'ws'
 
-dotenv.config({ path: './.env' })
+dotenv.config()
 neonConfig.webSocketConstructor = ws
 neonConfig.poolQueryViaFetch = true
 const connectionString = <string>process.env.DATABASE_URL
