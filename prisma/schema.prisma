@@ -11,18 +11,18 @@ datasource db {
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model appointments {
-  id                Int           @default(autoincrement())
+  id                Int           @id(map: "pk_appointment_id") @default(autoincrement())
   type_of_massage   Int
   registration_date DateTime      @default(dbgenerated("CURRENT_TIMESTAMP(2)")) @db.Timestamptz(6)
   scheduled_date    DateTime      @unique(map: "unique_scheduled_date") @db.Timestamptz(6)
   notes             String?       @db.VarChar(255)
   therapist_id      String        @db.Uuid
   patient_id        Int
-  price             Decimal       @default(100.00) @db.Decimal(10, 2)
+  price             String        @default(dbgenerated("100.00"))
   duration          Int           @default(60)
+  massage_types     massage_types @relation(fields: [type_of_massage], references: [id], onDelete: Cascade, map: "fk_type_of_massage")
   patients          patients      @relation(fields: [patient_id], references: [id], onDelete: Cascade, map: "fk_patient_id")
   therapists        therapists    @relation(fields: [therapist_id], references: [uuid], onDelete: Cascade, map: "fk_therapist_id")
-  massage_types     massage_types @relation(fields: [type_of_massage], references: [id], onDelete: Cascade, map: "fk_type_of_massage")
 }
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
@@ -35,7 +35,7 @@ model genders {
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model massage_types {
-  id           Int            @id(map: "pk_massage_types_id")
+  id           Int            @id(map: "pk_massage_type_id")
   name         String
   appointments appointments[]
 }
@@ -47,8 +47,8 @@ model patients {
   first_name   String
   last_name    String
   gender       Int
-  email        String
-  phone_number String
+  email        String         @unique(map: "unique_email")
+  phone_number String         @unique(map: "unique_phone_number")
   therapist_id String         @db.Uuid
   appointments appointments[]
   genders      genders        @relation(fields: [gender], references: [id], onDelete: Cascade, map: "fk_gender_id")
