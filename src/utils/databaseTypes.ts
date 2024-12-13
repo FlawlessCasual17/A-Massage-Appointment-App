@@ -37,7 +37,7 @@ export interface MassageType {
 /** A table for storing data related to patients. */
 export interface Patients {
     /** The patient's id. */
-    // id: number
+    id?: number | null
     /** The patient's first name. */
     first_name: string
     /** The patient's last name. */

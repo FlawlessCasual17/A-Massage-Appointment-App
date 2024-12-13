@@ -1,0 +1,4 @@
+const pResponse = await fetch('/api/patients')
+const pData: Patients[] = await pResponse.json()
+const recentPatientId = Number(pData.filter(p => p.id === pResultId)
+    .find(i => i.id))

@@ -46,7 +46,7 @@ export default function Page() {
 
     // Makes API requests to the database.
     useEffect(() => {
-        (async function() {
+        ;(async () => {
             try {
                 const mResponse = await fetch('/api/massage_types')
                 const tResponse = await fetch('/api/therapists')
@@ -87,17 +87,19 @@ export default function Page() {
     useEffect(() => {
         const massageId = localStorage.getItem('selectedMassage') as MassageId | null
         const therapistId = localStorage.getItem('selectedTherapist') as TherapistUuid | null
-        const asString = localStorage.getItem('durationAndPrice') as string
-        const durationAndPrice = JSON.parse(asString) as DurationAndPriceType | '{"duration":0,"price":0}'
+        const asString = String(localStorage.getItem('durationAndPrice'))
+    const durationAndPrice = JSON.parse(asString) as DurationAndPriceType | '{}'
 
-        if (massageId !== null)
-            setSelectedMassage(Number(massageId))
-        if (therapistId !== null)
-            setSelectedTherapist(therapistId)
-        if (durationAndPrice !== '{"duration":0,"price":0}')
-            setDurationAndPrice(durationAndPrice)
+        ;(() => { // This ensures that these statements will only run once
+            if (massageId !== null)
+                setSelectedMassage(massageId)
+            if (therapistId !== null)
+                setSelectedTherapist(therapistId)
+            if (durationAndPrice !== '{}')
+                setDurationAndPrice(durationAndPrice)
 
-        console.log('Successfully retrieved selected options from localStorage!')
+            console.log('Successfully retrieved selected options from localStorage!')
+        })()
     }, [])
 
     return (
@@ -128,16 +130,19 @@ export default function Page() {
                     </h2>
                     {massageTypes.map(m => (
                         <Card
+                            title='Click the card to select the massage you want!'
                             key={m.id}
                             className={`btn type
                                 ${selectedMassage === m.id ? 'chosen' : 'not-chosen'}`}
-                            onClick={() => setSelectedMassage(m.id)}>
+                            onClick={() => setSelectedMassage(m.id)}
+                        >
                             <Card.Body className='flex items-center gap-4 flex-col p-5'>
                                 <Card.Title className='text-xl'>{m.name}</Card.Title>
-                                <label className='relative top-3 italic'>
-                                    Select a Duration and Price
-                                </label>
-                                <select name='Duration and Price' className='select option'>
+                                <select
+                                    title='Select a Duration and Price'
+                                    name='Duration and Price'
+                                    className='select option'
+                                >
                                     <option className='italic' disabled>
                                         Select a Duration and Price
                                     </option>

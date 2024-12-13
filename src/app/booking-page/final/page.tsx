@@ -4,6 +4,11 @@ import ThemeToggle from '@/app/components/themeToggle'
 import icon from '@/assets/icon.svg'
 import { Appointments, Genders, MassageType, Patients, Therapists } from '@/utils/databaseTypes'
 import { DurationAndPriceType, MassageId, TherapistUuid } from '@/utils/otherTypes'
+import { createTheme } from '@mui/material/styles'
+import type {} from '@mui/x-date-pickers/themeAugmentation'
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
+import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker'
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
 import dayjs from 'dayjs'
 import Image from 'next/image'
 import { FormEvent, useEffect, useState } from 'react'
@@ -24,14 +29,14 @@ export default function Page() {
     const [therapists, setTherapists] = useState<Therapists[]>([])
     const [massageTypes, setMassageTypes] = useState<MassageType[]>([])
 
-
     // Contains properties associated with patients.
     const patientElements: Patients = {
         // The default value can be updated based on selection
+        id: null,
         first_name: '',
         last_name: '',
         email: '',
-        gender: 0,
+        gender: 0 | 1,
         phone_number: '',
         therapist_id: selectedTherapist as string
     }
@@ -62,7 +67,7 @@ export default function Page() {
     const handleDate = (date?: dayjs.ConfigType) =>
         setAppointmentData({
             ...appointmentData,
-            scheduled_date: dayjs(date).format('YYYY-MM-DD HH:mm:ss')
+            scheduled_date: dayjs(date).format()
         })
 
     const successAlertIcon = (
@@ -83,13 +88,13 @@ export default function Page() {
     // Holds boolean variables for a conditional JSX element.
     const [success, setSuccess] = useState({
         patientResultSuccess: false,
-        appointmentResultSuccess: false
+        appResultSuccess: false
     })
 
     // Used for a conditional JSX element.
-    const isBookingSuccessful = success.patientResultSuccess && success.appointmentResultSuccess
+    const isBookingSuccessful = success.patientResultSuccess && success.appResultSuccess
 
-    // Handles the final submit.
+    // Handles the final form submission.
     async function handleSubmit(event: FormEvent) {
         event.preventDefault()
 
@@ -98,62 +103,77 @@ export default function Page() {
         const patientResult = await registerPatient(patientData)
         const patientResultSuccess = patientResult.success
         if (!patientResultSuccess) {
-            console.error(`An error occurred: ${patientResult}`)
+            console.error('An error occurred during patient registration:')
+            console.error({ ...patientResult })
             return
         }
 
+        console.log(patientResult)
+
         if (appointmentData.therapist_id === null) return
 
-        // Get id of registered patient
-        const patientsResponse = await fetch('/api/patients')
-        const patients = await patientsResponse.json()
-        console.log(patientResult), setPatientId(patients['id'])
+        // Get id of registered patient.
+        const resPatientId = patientResult.data.id
+        // Sets the patient id for the appointment data.
+        setPatientId(resPatientId)
+
+        // For correcting patient_id
+        const correctPatientId = (patient_id: number) =>
+            setAppointmentData(prevData => ({ ...prevData, patient_id }))
+
+        // Make sure the patient's id is in the date of the appointment.
+        const appPatientId = appointmentData.patient_id
+        if (appPatientId !== resPatientId) {
+            console.log(`resPatientId Error: ${appPatientId} is not equal to ${resPatientId}`)
+            console.log('Correcting...')
+            correctPatientId(resPatientId)
+        }
 
         const appointmentResult = await registerAppointment(appointmentData)
-        const appointmentResultSuccess = appointmentResult.success
-        if (appointmentResultSuccess) {
-            console.error(`An error occurred: ${appointmentResult}`)
+        const appResultSuccess = appointmentResult.success
+        if (!appResultSuccess) {
+            console.error('An error occurred during appointment booking:')
+            console.error({ ...appointmentResult })
             return
         }
 
         console.log(appointmentResult)
-        setSuccess({ patientResultSuccess, appointmentResultSuccess })
+        setSuccess({ patientResultSuccess, appResultSuccess })
     }
 
+    // If the options are found in the local storage, load them.
     // This helps the browser remember which
     // options the user selected.
     useEffect(() => {
         const massageId = localStorage.getItem('selectedMassage') as MassageId | null
         const therapistId = localStorage.getItem('selectedTherapist') as TherapistUuid | null
         const asString = localStorage.getItem('durationAndPrice') as string
-        const durationAndPrice = JSON.parse(asString) as DurationAndPriceType | '{"duration":0,"price":0}'
+        const durationAndPrice = JSON.parse(asString) as DurationAndPriceType | '{}'
 
-        if (massageId !== null)
-            setSelectedMassage(Number(massageId))
-        if (therapistId !== null)
-            setSelectedTherapist(therapistId)
-        if (durationAndPrice !== '{"duration":0,"price":0}')
-            setDurationAndPrice(durationAndPrice)
+        ;(() => {
+            if (massageId !== null) setSelectedMassage(Number(massageId))
+            if (therapistId !== null) setSelectedTherapist(therapistId)
+            if (durationAndPrice !== '{}') setDurationAndPrice(durationAndPrice)
 
-        console.log('Successfully retrieved selected options from localStorage!')
+            console.log('Successfully retrieved selected options from localStorage!')
+        })()
     }, [])
 
     useEffect(() => {
-        if (selectedTherapist) {
+        if (selectedTherapist !== null) {
             setPatientData(prevData => ({ ...prevData, therapist_id: selectedTherapist }))
             setAppointmentData(prevData => ({ ...prevData, therapist_id: selectedTherapist }))
         }
     }, [selectedTherapist])
 
     useEffect(() => {
-        if (selectedMassage)
-            setAppointmentData(prevData => ({ ...prevData, type_of_massage: selectedMassage }))
+        if (selectedMassage !== null || selectedMassage !== 0)
+            setAppointmentData(prevData => ({ ...prevData, type_of_massage: selectedMassage as number }))
     }, [selectedMassage])
 
     useEffect(() => {
         therapists.forEach(therapist => {
-            if (therapist.uuid === selectedTherapist)
-                setTherapistName(`${therapist.first_name} ${therapist.last_name}`)
+            if (therapist.uuid === selectedTherapist) setTherapistName(`${therapist.first_name} ${therapist.last_name}`)
         })
 
         massageTypes.forEach(massageType => {
@@ -164,7 +184,7 @@ export default function Page() {
     // Used for fetching and storing the
     // query result in the "genders" array.
     useEffect(() => {
-        (async function () {
+        ;(async () => {
             try {
                 const gResponse = await fetch('/api/genders')
                 const tResponse = await fetch('/api/therapists')
@@ -172,7 +192,9 @@ export default function Page() {
                 setGenders(await gResponse.json())
                 setTherapists(await tResponse.json())
                 setMassageTypes(await mResponse.json())
-            } catch (error) { console.error(`Fetching error: ${error}`) }
+            } catch (error) {
+                console.error(`Fetching error: ${error}`)
+            }
         })()
     }, [])
 
@@ -239,6 +261,7 @@ export default function Page() {
                     <Input
                         type='tel'
                         name='phone_number'
+                        title='Insert your phone number here'
                         placeholder='Format: 000 000 0000'
                         className='input-styled rounded-xl'
                         value={patientData.phone_number || ''}
@@ -247,13 +270,19 @@ export default function Page() {
                 </div>
                 <div>
                     <label className='block mb-2'>Scheduled Date</label>
-                    <Input
-                        type='datetime-local'
-                        name='scheduled_date'
-                        className='input-styled rounded-xl /*m-w-[20rem]*/'
-                        value={appointmentData.scheduled_date || ''}
-                        onChange={e => handleDate(e.target.value)}
-                    />
+                    <LocalizationProvider dateAdapter={AdapterDayjs}>
+                        <DateTimePicker
+                            slotProps={{
+                                layout: { className: 'input-styled rounded-xl dark:text-white dark:bg-[#1d232a]' },
+                                desktopPaper: { className: 'rounded-xl dark:text-white dark:bg-[#1d232a]' },
+                                day: { className: 'dark:text-white focus:border-white' },
+                                field: { className: 'dark:text-white border-slate-400' },
+                                textField: { className: 'dark:text-white border-slate-400 focus' }
+                            }}
+                            className='date-time'
+                            onChange={handleDate}
+                        />
+                    </LocalizationProvider>
                 </div>
                 <div>
                     <label className='block mb-2'>Additional Notes</label>
@@ -272,21 +301,15 @@ export default function Page() {
             {/* Right side */}
             <Card className='other-info form-control space-y-4 rounded-xl left-80 -top-[50rem]'>
                 <Card.Body className='text-center'>
-                    <Card.Title className='prose-h1:text-xl font-bold mb-4'>
-                        Selected Massage Therapist
-                    </Card.Title>
+                    <Card.Title className='prose-h1:text-xl font-bold mb-4'>Selected Massage Therapist</Card.Title>
                     <p className='prose-p:text-base'>{therapistName}</p>
                 </Card.Body>
                 <Card.Body className='text-center'>
-                    <Card.Title className='prose-h1:text-xl font-bold mb-4'>
-                        Selected Massage Type
-                    </Card.Title>
+                    <Card.Title className='prose-h1:text-xl font-bold mb-4'>Selected Massage Type</Card.Title>
                     <p className='prose-p:text-base'>{massageName}</p>
                 </Card.Body>
                 <Card.Body className='text-center'>
-                    <Card.Title className='prose-h1:text-xl font-bold mb-4'>
-                        Selected Duration and Price
-                    </Card.Title>
+                    <Card.Title className='prose-h1:text-xl font-bold mb-4'>Selected Duration and Price</Card.Title>
                     <p className='prose-p:text-base'>
                         {durationAndPrice.duration} minutes and ${durationAndPrice.price} CAD
                     </p>
@@ -296,9 +319,7 @@ export default function Page() {
                 <div className='flex flex-col footer-center'>
                     <div role='alert' className='alert alert-success w-[30%] bottom-1 rounded-xl'>
                         {successAlertIcon}
-                        <span className='text-white'>
-                            You have successfully booked your massage appointment!
-                        </span>
+                        <span className='text-white'>You have successfully booked your massage appointment!</span>
                     </div>
                 </div>
             )}

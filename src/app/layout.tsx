@@ -1,4 +1,5 @@
 import '@fontsource-variable/inter'
+import { StyledEngineProvider } from '@mui/material'
 import type { Metadata } from 'next'
 import './globals.css'
 import { ReactNode } from 'react'
@@ -16,7 +17,9 @@ export default function RootLayout({ children }: ReadonlyReactNode) {
         <html lang='en' suppressHydrationWarning>
             <body className='antialiased'>
                 <ThemeProvider>
-                    {children}
+                    <StyledEngineProvider injectFirst>
+                        {children}
+                    </StyledEngineProvider>
                 </ThemeProvider>
             </body>
         </html>

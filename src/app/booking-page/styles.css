@@ -13,8 +13,15 @@
     width: 100%;
     padding: 0.5rem;
     border-width: 2px;
-    @apply focus:border-4 border-slate-400 focus:border-blue-400
+    @apply focus:border-2 border-slate-400 focus:border-blue-400
 }
+
+.date-time {
+    width: 100%;
+    @apply [&>*]:input [&>*]:rounded-xl [&>*]:focus-within:border-blue-400 [&>*]:border-2
+        [&>*]:border-slate-400 [&>*]:dark:text-white [&>*]:dark:bg-[#1d232a]
+}
+
 
 .other-info {
     position: relative;
