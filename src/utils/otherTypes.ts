@@ -4,5 +4,5 @@ export type TherapistUuid = string | null
 
 export type DurationAndPriceType = {
     duration: number
-    price: number
+    price: string
 }

@@ -21,7 +21,7 @@ export default function Page() {
     const [selectedTherapist, setSelectedTherapist] = useState<TherapistUuid>(null)
     const [durationAndPrice, setDurationAndPrice] = useState<DurationAndPriceType>({
         duration: 0,
-        price: 0
+        price: ''
     })
 
     // Helps the selected duration and price option.
@@ -36,7 +36,7 @@ export default function Page() {
         const value = targetValue.split('-$')
         const options = {
             duration: Number(value[0]),
-            price: Number(value[1])
+            price: value[1] + '.00'
         }
         setDurationAndPrice({ ...options })
     }
@@ -88,7 +88,7 @@ export default function Page() {
         const massageId = localStorage.getItem('selectedMassage') as MassageId | null
         const therapistId = localStorage.getItem('selectedTherapist') as TherapistUuid | null
         const asString = String(localStorage.getItem('durationAndPrice'))
-    const durationAndPrice = JSON.parse(asString) as DurationAndPriceType | '{}'
+        const durationAndPrice = JSON.parse(asString) as DurationAndPriceType | '{}'
 
         ;(() => { // This ensures that these statements will only run once
             if (massageId !== null)

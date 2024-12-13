@@ -21,7 +21,7 @@ export default function Page() {
     const [selectedTherapist, setSelectedTherapist] = useState<TherapistUuid>(null)
     const [durationAndPrice, setDurationAndPrice] = useState<DurationAndPriceType>({
         duration: 0,
-        price: 0
+        price: ''
     })
 
     // Stores query results from an API request
